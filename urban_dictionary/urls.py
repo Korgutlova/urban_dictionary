@@ -16,8 +16,10 @@ Including another URLconf
 from django.conf.urls import url
 from django.contrib import admin
 from django.urls import path, include
+from django.views.generic import RedirectView
 
 urlpatterns = [
     url(r'^admin/', admin.site.urls),
-    url(r'^urban/', include('website.urls', namespace="website"))
+    url(r'^urban/', include('website.urls', namespace="website")),
+    url(r'accounts/', include('django.contrib.auth.urls'))
 ]
