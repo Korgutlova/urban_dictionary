@@ -1,0 +1,44 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}
+    Современный словарик
+{% endblock %}
+
+{% block content %}
+    <h3 class="text-center">Последние добавленные слова</h3>
+
+    <form method="get" id="search_form">
+        <div class="input-group">
+            <span class="input-group-addon" id="basic-addon1" onclick="$('#search_form').submit()"><i class="fa fa-search"></i></span>
+            {{ form.search_field }}
+        </div>
+
+    </form>
+
+    {% if terms %}
+        <div class="list-group mar-top-25">
+            <ul id="itemsUL" class="list-unstyled">
+                {% for term in terms %}
+                    <li class="mar-top-10">
+                        <a href="{% url 'website:term_page' term.id %}"
+                           class="list-group-item box-shadow ov-hidden"
+                           id="term{{ term.id }}">
+
+{#                            <span class="square"#}
+{#                                  style="background-image:url('{{ MEDIA_URL }}{{ term.photo }}');"></span>#}
+                            <h3 class="list-group-item-heading" id="c${complex.id?c}">{{ term.name }}</h3>
+                            {% for definition in term.definitions.all %}
+                                <h5>{{ definition.description }}</h5>
+                            {% endfor %}
+                        </a>
+                    </li>
+
+                {% endfor %}
+            </ul>
+        </div>
+    {% else %}
+        <p class="text-center mar-top-125">Пока нет никаких терминов</p>
+    {% endif %}
+
+{% endblock %}
