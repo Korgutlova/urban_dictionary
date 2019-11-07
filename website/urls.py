@@ -4,5 +4,5 @@ from website.views import *
 app_name = "website"
 
 urlpatterns = [
-    url(r'^$', main_page)
+    url(r'^$', main_page, name="main_page"),
 ]
