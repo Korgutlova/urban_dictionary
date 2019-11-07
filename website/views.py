@@ -3,6 +3,7 @@ from django.shortcuts import render
 
 
 # Create your views here.
+from django.views import View
 from django.views.generic import ListView, DetailView
 
 from website.models import Term
@@ -26,5 +27,10 @@ class HomePageView(ListView):
     #     return context
 
 
-class TermView(DetailView):
-    pass
+class TermView(View):
+
+    def get(self, request, pk):
+        term = Term.objects.get(pk=pk)
+        return render(request, 'website/term_page.html',
+                      {'term': term,
+                       })
