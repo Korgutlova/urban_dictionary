@@ -5,4 +5,4 @@ from django.shortcuts import render
 # Create your views here.
 
 def main_page(request):
-    return HttpResponse("Hello! It is a main page!")
+    return render(request, "base/base_page.html", {})
