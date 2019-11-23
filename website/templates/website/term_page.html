@@ -1,0 +1,87 @@
+{% extends "base_generic.html" %}
+{% load static %}
+
+{% block title %}
+    {{ term.name }}
+{% endblock %}
+
+{#{% load tournament_extras %}#}
+
+{% block extrahead %}
+    <link rel="stylesheet" href="{% static 'stats/dataTables.bootstrap.min.css' %}">
+    <link rel="stylesheet" href="{% static 'stats/tableexport.min.css' %}">
+
+    <script src="{% static 'stats/jquery.dataTables.min.js' %}"></script>
+    <script src="{% static 'stats/dataTables.bootstrap.min.js' %}"></script>
+
+    {# tableexport.js staff #}
+    <script lang="javascript" src="{% static 'stats/xlsx.core.min.js' %}"></script>
+    <script src="{% static 'stats/FileSaver.min.js' %}"></script>
+    <script src="{% static 'stats/tableexport.min.js' %}"></script>
+{% endblock %}
+
+{% block content %}
+
+    <div class="row mar-bot-10">
+        <div class="col-md-12">
+            <div class="bg-w box-shadow pad-10 ov-hidden">
+                <div class="row">
+                    <div class="col-md-9">
+                        <h2 class="mar-top-10">{{ term.name }}</h2>
+                        {% for definition in term.definitions.all %}
+                            <h4>{{ definition.description }}</h4>
+                            <h4>{{ definition.examples }}</h4>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+{% endblock %}
+
+{% block scripts %}
+    <script>
+
+        $(document).ready(function () {
+            $('res-table').DataTable({
+                scrollX: true,
+                "bPaginate": false,
+                scrollCollapse: true,
+                "language": {
+                    "url": "{% static 'stats/Russian.json' %}"
+                },
+                "info": false
+            });
+
+            TableExport.prototype.formatConfig.xlsx.buttonContent = "Экспорт в xlsx";
+            TableExport.prototype.formatConfig.csv.buttonContent = "Экспорт в csv";
+            TableExport(document.getElementById("result-table-m"), {
+                headers: true,                              // (Boolean), display table headers (th or td elements) in the <thead>, (default: true)
+                formats: ['xlsx', 'csv'],                   // (String[]), filetype(s) for the export, (default: ['xlsx', 'csv', 'txt'])
+                filename: '{{ tournament.name }}' + ' Cтат.',                             // (id, String), filename for the downloaded file, (default: 'id')
+                bootstrap: true,                           // (Boolean), style buttons using bootstrap, (default: true)
+                exportButtons: true,                        // (Boolean), automatically generate the built-in export buttons for each of the specified formats (default: true)
+                position: 'bottom',                         // (top, bottom), position of the caption element relative to table, (default: 'bottom')
+                ignoreRows: null,                           // (Number, Number[]), row indices to exclude from the exported file(s) (default: null)
+                ignoreCols: null,                           // (Number, Number[]), column indices to exclude from the exported file(s) (default: null)
+                trimWhitespace: false
+            });
+
+            TableExport(document.getElementById("result-table-w"), {
+                headers: true,                              // (Boolean), display table headers (th or td elements) in the <thead>, (default: true)
+                formats: ['xlsx', 'csv'],                   // (String[]), filetype(s) for the export, (default: ['xlsx', 'csv', 'txt'])
+                filename: '{{ tournament.name }}' + ' Cтат.',                             // (id, String), filename for the downloaded file, (default: 'id')
+                bootstrap: true,                           // (Boolean), style buttons using bootstrap, (default: true)
+                exportButtons: true,                        // (Boolean), automatically generate the built-in export buttons for each of the specified formats (default: true)
+                position: 'bottom',                         // (top, bottom), position of the caption element relative to table, (default: 'bottom')
+                ignoreRows: null,                           // (Number, Number[]), row indices to exclude from the exported file(s) (default: null)
+                ignoreCols: null,                           // (Number, Number[]), column indices to exclude from the exported file(s) (default: null)
+                trimWhitespace: false
+            });
+
+
+        });
+    </script>
+{% endblock %}
