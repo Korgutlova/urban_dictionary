@@ -23,5 +23,5 @@ urlpatterns = [
     url(r'^urban/', include('website.urls', namespace="website")),
     url(r'^accounts/', include('django_registration.backends.activation.urls')),
     url(r'^accounts/', include('django.contrib.auth.urls')),
-    url('', RedirectView.as_view(url='/urban/', permanent=True)),
+    url(r'^$', RedirectView.as_view(url='/urban/', permanent=True)),
 ]
