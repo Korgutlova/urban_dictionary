@@ -5,6 +5,16 @@ from django.shortcuts import render, redirect
 
 from website.forms import EditUserForm, EditProfileForm
 
+# Create your views here.
+from django.views.generic import ListView, DetailView
+
+from website.models import Term
+
+
+class HomePageView(ListView):
+    model = Term
+    context_object_name = 'terms'
+    template_name = 'website/homepage.html'
 
 def main_page(request):
     return render(request, "base/base_page.html", {})
@@ -27,3 +37,7 @@ def update_profile(request):
         'user_form': user_form,
         'profile_form': profile_form
     })
+
+
+class TermView(DetailView):
+    pass
