@@ -1,5 +1,7 @@
 from django.contrib.auth.models import User
 from django.db import models
+from django.db.models.signals import post_save
+from django.dispatch import receiver
 
 ROLE_CHOICES = (
     (1, 'Пользователь'),
@@ -38,7 +40,18 @@ class CustomUser(models.Model):
     # link_photo
 
     def __str__(self):
-        return self.user.name
+        return self.user.username
+
+
+@receiver(post_save, sender=User)
+def create_user_profile(sender, instance, created, **kwargs):
+    if created:
+        CustomUser.objects.create(user=instance)
+
+
+@receiver(post_save, sender=User)
+def save_user_profile(sender, instance, **kwargs):
+    instance.custom_user.save()
 
 
 class Term(models.Model):
