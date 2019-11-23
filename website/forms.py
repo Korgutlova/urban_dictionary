@@ -1,7 +1,7 @@
 from django import forms
-from django_registration.forms import User
-
+from django.contrib.auth.models import User
 from website.models import CustomUser
+
 
 class EditUserForm(forms.ModelForm):
     class Meta:

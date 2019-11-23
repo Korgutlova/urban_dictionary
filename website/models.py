@@ -34,7 +34,7 @@ class CustomUser(models.Model):
     role = models.IntegerField(choices=ROLE_CHOICES, blank=False, null=False, default=ROLE_CHOICES[0][0],
                                verbose_name="Роль")
     date_registration = models.DateTimeField(auto_now_add=True, blank=False, verbose_name="Дата регистрации")
-    status = models.IntegerField(choices=STATUSES, blank=False, null=False, default=STATUSES[0][0],
+    status = models.IntegerField(choices=STATUSES, blank=False, null=False, default=STATUSES[2][0],
                                  verbose_name="Статус")
 
     # link_photo
