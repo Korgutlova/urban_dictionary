@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Создание статьи</title>
+</head>
+<body>
+<form method="post" action="{% url 'website:create_definition' %}">
+    {% csrf_token %}
+    Название<input type="text" name="name"><br>
+    Описание<textarea name="description"></textarea><br>
+    Примеры<textarea name="examples"></textarea><br>
+    Ссылка на первоисточник<input name="source" type="text"><br>
+    Прикрепить файл <input type="file"><br>
+    <button id="add_file">Добавить еще</button><br>
+    <button type="submit">Сохранить</button>
+</form>
+</body>
+</html>

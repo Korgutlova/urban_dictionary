@@ -4,6 +4,7 @@ from django.http import HttpResponse
 from django.shortcuts import render, redirect
 
 from website.forms import EditUserForm, EditProfileForm
+from website.models import Definition, Term, CustomUser
 
 
 def main_page(request):
@@ -27,3 +28,19 @@ def update_profile(request):
         'user_form': user_form,
         'profile_form': profile_form
     })
+
+
+def page_create_definition(request):
+    if request.method == 'POST':
+        term = Term(name=request.POST["name"])
+        term.save()
+        definition = Definition(term=term, description=request.POST["description"],
+                                examples=request.POST["examples"], source=request.POST["source"],
+                                author=CustomUser.objects.get(user=request.user))
+        definition.save()
+        return redirect("website:definition", definition.id)
+    return render(request, "definition/create_definition.html", {})
+
+
+def definition(request, id):
+    return HttpResponse("Page some definition %s" % id)

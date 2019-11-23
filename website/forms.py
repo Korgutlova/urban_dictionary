@@ -3,6 +3,7 @@ from django_registration.forms import User
 
 from website.models import CustomUser
 
+
 class EditUserForm(forms.ModelForm):
     class Meta:
         model = User

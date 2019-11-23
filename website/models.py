@@ -34,7 +34,7 @@ class CustomUser(models.Model):
     role = models.IntegerField(choices=ROLE_CHOICES, blank=False, null=False, default=ROLE_CHOICES[0][0],
                                verbose_name="Роль")
     date_registration = models.DateTimeField(auto_now_add=True, blank=False, verbose_name="Дата регистрации")
-    status = models.IntegerField(choices=STATUSES, blank=False, null=False, default=STATUSES[0][0],
+    status = models.IntegerField(choices=STATUSES, blank=False, null=False, default=STATUSES[2][0],
                                  verbose_name="Статус")
 
     # link_photo
@@ -66,9 +66,10 @@ class Definition(models.Model):
                              blank=False, null=False, verbose_name='Термин')
     description = models.TextField(verbose_name="Описание термина")
     examples = models.TextField(verbose_name="Примеры использования")
-    date = models.DateTimeField(blank=True, verbose_name="Дата публикации")
+    date = models.DateTimeField(blank=True, verbose_name="Дата публикации", null=True)
     author = models.ForeignKey(CustomUser, related_name='definitions', on_delete=models.SET_NULL,
                                blank=True, null=True, verbose_name='Автор')
+    source = models.TextField(verbose_name="Ссылка на источник/первоисточник", default=None)
 
     def __str__(self):
         return "Определение %s - автор %s" % (self.term, self.author)
