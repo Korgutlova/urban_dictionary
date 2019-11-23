@@ -5,4 +5,5 @@ app_name = "website"
 
 urlpatterns = [
     url(r'^$', main_page, name="main_page"),
+    url('edit_profile/', update_profile, name='update_profile')
 ]

@@ -34,6 +34,7 @@
 </form>
 
 {# Assumes you setup the password_reset view in your URLconf #}
+    <p><a href="{% url 'django_registration_register' %}">Регистрация</a></p>
 <p><a href="{% url 'password_reset' %}">Забыли пароль?</a></p>
 
 {% endblock %}

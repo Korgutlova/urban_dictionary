@@ -21,6 +21,7 @@ from django.views.generic import RedirectView
 urlpatterns = [
     url(r'^admin/', admin.site.urls),
     url(r'^urban/', include('website.urls', namespace="website")),
-    url(r'accounts/', include('django.contrib.auth.urls')),
+    url(r'^accounts/', include('django_registration.backends.activation.urls')),
+    url(r'^accounts/', include('django.contrib.auth.urls')),
     url('', RedirectView.as_view(url='/urban/', permanent=True)),
 ]

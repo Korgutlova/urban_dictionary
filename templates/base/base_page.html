@@ -44,9 +44,21 @@
                 <li class="nav-item horizontal">
                     <a class="nav-link" href="#">Поддержка</a>
                 </li>
-                <li class="nav-item horizontal">
-                    <img src="{% static 'img/profile.png' %}" height="50" width="50">
+                {% if not user.is_authenticated %}
+                    <li class="nav-item horizontal">
+                    <a class="nav-link" href="{% url 'login'%}">Войти</a>
                 </li>
+                    {% else %}
+                    <li class="nav-item horizontal">
+                    <a class="nav-link" href="{% url 'website:update_profile' %}">Редактировать профиль</a>
+                </li>
+                    <li class="nav-item horizontal">
+                    <a class="nav-link" href="{% url 'logout'%}">Выйти</a>
+                </li>
+{#                    <li class="nav-item horizontal">#}
+{#                        <img src="{% static 'img/profile.png' %}" height="50" width="50">#}
+{#                    </li>#}
+                {% endif %}
             </ul>
         </div>
         <ul class="navbar-nav flex-row mr-auto navbar-fixed col-md-10" style="padding-top: 40px;">
@@ -90,7 +102,7 @@
                 рамки и место обучения кадров играет важную роль в формировании существенных финансовых и
                 административных условий.
             </p>
-            <p> адача организации, в особенности же новая модель организационной деятельности требуют от нас анализа
+            <p> Задача организации, в особенности же новая модель организационной деятельности требуют от нас анализа
                 соответствующий условий активизации. Задача организации, в особенности же новая модель организационной
                 деятельности в значительной степени обуславливает создание направлений прогрессивного развития.
                 Повседневная практика показывает, что дальнейшее развитие различных форм деятельности обеспечивает
