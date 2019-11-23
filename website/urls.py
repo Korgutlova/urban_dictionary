@@ -7,5 +7,6 @@ urlpatterns = [
     # url(r'^$', HomePageView.as_view(), name='home_page'),
     url(r'^(?P<pk>\d+)$', TermView.as_view(), name='term_page'),
     url(r'^$', main_page, name="main_page"),
-    url('edit_profile/', update_profile, name='update_profile')
+    url('edit_profile/', update_profile, name='update_profile'),
+    url('activate_user/', activate_user, name='activate_user'),
 ]

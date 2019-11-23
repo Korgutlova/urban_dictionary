@@ -9,10 +9,19 @@ from website.forms import EditUserForm, EditProfileForm
 from django.views import View
 from django.views.generic import ListView, DetailView
 
-from website.models import Term
+from website.models import Term, STATUSES
+
 
 def main_page(request):
     return render(request, "base/base_page.html", {})
+
+@login_required
+@transaction.atomic
+def activate_user(request):
+    request.user.custom_user.status = STATUSES[0][0]
+    request.user.save()
+    return redirect('website:update_profile')
+
 
 
 @login_required
