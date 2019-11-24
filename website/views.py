@@ -6,9 +6,23 @@ from django.shortcuts import render, redirect
 from website.forms import EditUserForm, EditProfileForm
 from website.models import Definition, Term, CustomUser
 
+# Create your views here.
+from django.views import View
+from django.views.generic import ListView, DetailView
+
+from website.models import Term, STATUSES
+
 
 def main_page(request):
     return render(request, "base/base_page.html", {})
+
+
+@login_required
+@transaction.atomic
+def activate_user(request):
+    request.user.custom_user.status = STATUSES[0][0]
+    request.user.save()
+    return redirect('website:update_profile')
 
 
 @login_required
@@ -44,3 +58,12 @@ def page_create_definition(request):
 
 def definition(request, id):
     return HttpResponse("Page some definition %s" % id)
+
+
+class TermView(View):
+
+    def get(self, request, pk):
+        term = Term.objects.get(pk=pk)
+        return render(request, 'website/term_page.html',
+                      {'term': term,
+                       })
