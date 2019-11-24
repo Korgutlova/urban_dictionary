@@ -4,7 +4,7 @@ from django.http import HttpResponse
 from django.shortcuts import render, redirect
 
 from website.forms import EditUserForm, EditProfileForm
-from website.models import Definition, Term, CustomUser
+from website.models import Definition, Term, CustomUser, Example
 
 # Create your views here.
 from django.views import View
@@ -49,9 +49,15 @@ def page_create_definition(request):
         term = Term(name=request.POST["name"])
         term.save()
         definition = Definition(term=term, description=request.POST["description"],
-                                examples=request.POST["examples"], source=request.POST["source"],
+                                source=request.POST["source"],
                                 author=CustomUser.objects.get(user=request.user))
         definition.save()
+        examples = request.POST.getlist("examples")
+        primary = int(request.POST.get("primary"))
+        print(primary)
+        for i, ex in enumerate(examples):
+            example = Example(example=ex, primary=True if primary == i else False, definition=definition)
+            example.save()
         return redirect("website:definition", definition.id)
     return render(request, "website/definition/create_definition.html", {})
 

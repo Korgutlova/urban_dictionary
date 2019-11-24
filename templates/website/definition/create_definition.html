@@ -1,13 +1,35 @@
 {% extends 'website/base/base_page.html' %}
 {% block content %}
-<form method="post" action="{% url 'website:create_definition' %}">
-    {% csrf_token %}
-    Название<input type="text" name="name"><br>
-    Описание<textarea name="description"></textarea><br>
-    Примеры<textarea name="examples"></textarea><br>
-    Ссылка на первоисточник<input name="source" type="text"><br>
-    Прикрепить файл <input type="file"><br>
-    <button id="add_file">Добавить еще</button><br>
-    <button type="submit">Сохранить</button>
-</form>
+    <form method="post" action="{% url 'website:create_definition' %}">
+        {% csrf_token %}
+        Название<input type="text" name="name" class="form-control"><br>
+        Описание<textarea name="description" class="form-control"></textarea><br>
+        Примеры:<br>
+        Пример 1<textarea name="examples" class="form-control"></textarea>
+        <div class="form-check">
+            <label class="form-check-label">
+                <input type="radio" class="form-check-input" name="primary" value="0">Основной
+            </label>
+        </div>
+        <br>
+        Пример 2<textarea name="examples" class="form-control"></textarea>
+        <div class="form-check">
+            <label class="form-check-label">
+                <input type="radio" class="form-check-input" name="primary" value="1">Основной
+            </label>
+        </div>
+        <br>
+        <button id="add_example" class="btn btn-outline-secondary">Добавить еще пример</button>
+        <br>
+        Ссылка на первоисточник<input name="source" class="form-control" type="text"><br>
+        Прикрепить файлы <br>
+        Файл 1 <input class="form-control-file" type="file" name="upload_data"><br>
+        Файл 2 <input class="form-control-file" type="file" name="upload_data"><br>
+        <button id="add_file" class="btn btn-outline-secondary">Добавить еще файл</button>
+        <br><br>
+        <button class="btn btn-success" type="submit">Сохранить</button>
+    </form>
+{% endblock %}
+{% block script %}
+    {#    TO DO: create method for dynamic created fields #}
 {% endblock %}
