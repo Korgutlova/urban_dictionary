@@ -14,7 +14,7 @@ from website.models import Term, STATUSES
 
 
 def main_page(request):
-    return render(request, "base/base_page.html", {})
+    return render(request, 'website/base/base_page.html', {})
 
 
 @login_required
@@ -53,7 +53,7 @@ def page_create_definition(request):
                                 author=CustomUser.objects.get(user=request.user))
         definition.save()
         return redirect("website:definition", definition.id)
-    return render(request, "definition/create_definition.html", {})
+    return render(request, "website/definition/create_definition.html", {})
 
 
 def definition(request, id):
