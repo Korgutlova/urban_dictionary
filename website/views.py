@@ -14,7 +14,8 @@ from website.models import Term, STATUSES
 
 
 def main_page(request):
-    return render(request, 'website/base/base_page.html', {'definitions': Definition.objects.all()})
+    return render(request, 'website/base/base_page.html',
+                  {'definitions': Definition.objects.all()})
 
 
 @login_required
