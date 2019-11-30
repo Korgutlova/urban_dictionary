@@ -1,12 +1,12 @@
-from django.conf.urls import url
+from django.urls import path
 from website.views import *
 
 app_name = "website"
 
 urlpatterns = [
-    url(r'^$', main_page, name="main_page"),
-    url(r'^edit_profile/$', update_profile, name='update_profile'),
-    url(r'^create_definition/$', page_create_definition, name='page_create_definition'),
-    url(r'^definition/<int:pk>$',  TermView.as_view(), name='definition'),
-    url(r'^activate_user/$', activate_user, name='activate_user'),
+    path(r'', main_page, name="main_page"),
+    path(r'edit_profile/', update_profile, name='update_profile'),
+    path(r'create_definition/', page_create_definition, name='page_create_definition'),
+    path(r'definition/<int:pk>',  TermView.as_view(), name='definition'),
+    path(r'activate_user/', activate_user, name='activate_user'),
 ]
