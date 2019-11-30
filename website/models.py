@@ -25,7 +25,6 @@ class CustomUser(models.Model):
         return self.role == ROLE_CHOICES[1][0]
 
     def is_admin(self):
-        print("1")
         return self.role == ROLE_CHOICES[2][0]
 
 
@@ -105,6 +104,9 @@ class RequestForPublication(models.Model):
 
     def __str__(self):
         return "Запрос на публикацию определения %s" % self.definition
+
+    def is_new(self):
+        return self.status == STATUSES_FOR_REQUESTS[0][0]
 
 
 class Comment(models.Model):

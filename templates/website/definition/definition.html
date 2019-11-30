@@ -19,13 +19,17 @@
             </div>
         </div>
         <p>{{ definition.description }}</p>
-        <h3>Примеры</h3>
-        <div class="jumbotron">
-            <p>{{ definition.examples }}</p>
-        </div>
+        <h4>Примеры</h4>
+        {% for example in definition.examples.all %}
+            <div class="jumbotron">
+                <p>{{ forloop.counter }}) &nbsp {{ example.example }}</p>
+            </div>
+        {% endfor %}
         {% for file in definition.files.all %}
-            {# TO DO отображать файлы #}
-            <h1>{{ file.header_for_file }}</h1>
+            <div class="col-sm-5">
+                <img class="img-fluid" id="{{ file.id }}" src="{{ file.image.url }}"
+                     alt="{{ file.header_for_file }}">
+            </div>
         {% endfor %}
         <hr>
         <button class="btn btn-success"><i class="fa fa-thumbs-up">&nbsp{{ definition.get_likes }}</i></button>

@@ -8,6 +8,8 @@ from django.http import HttpResponse
 from django.shortcuts import render, redirect, get_object_or_404
 from django.views.decorators.http import require_POST
 
+from website.enums import STATUSES_FOR_REQUESTS
+
 try:
     from django.utils import simplejson as json
 except ImportError:
@@ -76,12 +78,10 @@ def create_definition(request):
             rfp.save()
         examples = request.POST.getlist("examples")
         primary = int(request.POST.get("primary"))
-        print(primary)
         for i, ex in enumerate(examples):
             example = Example(example=ex, primary=True if primary == i else False, definition=definition)
             example.save()
         for f, h in zip(request.FILES.getlist("upload_data"), request.POST.getlist("header")):
-            print(f)
             link_file = "%s/%s/%s.%s" % (
                 definition.author.id, definition.id, int(time.time() * 1000), f.name.split(".")[1])
             print(link_file)
@@ -96,13 +96,25 @@ def create_definition(request):
 @login_required
 def request_for_definition(request, pk):
     current_user = CustomUser.objects.get(user=request.user)
-    if not current_user.is_admin():
-        return redirect("website:page_not_found")
     rfp = get_object_or_404(RequestForPublication, pk=pk)
+    if not current_user.is_admin() or not rfp.is_new():
+        return redirect("website:page_not_found")
     if request.method == 'POST':
-        pass
+        answer = request.POST["answer"]
+        if answer == "approve":
+            rfp.status = STATUSES_FOR_REQUESTS[2][0]
+            rfp.definition.date = datetime.datetime.now()
+        else:
+            if answer == "reject":
+                rfp.status = STATUSES_FOR_REQUESTS[1][0]
+            else:
+                rfp.status = STATUSES_FOR_REQUESTS[3][0]
+            rfp.reason = request.POST["reason"]
+        rfp.save()
+        return redirect('website:main_page')
+
     return render(request, "website/definition/admin_definition_check.html",
-                  {"definition": rfp})
+                  {"rfp": rfp})
 
 
 def page_not_found(request):

@@ -1,6 +1,78 @@
 {% extends 'website/base/base_page.html' %}
 {% block title %}
-    Проверка для администратора
+    Проверка определения {{ rfp.definition.term.name }}
 {% endblock %}
 {% block content %}
+    <div style="margin: 30px">
+        <br>
+        <div class="row">
+            <div class="col-md-5">
+                <h3>{{ rfp.definition.term.name }}</h3>
+            </div>
+            <div class="col-md-6">
+                <h5>Автор статьи
+                    - {{ rfp.definition.author.user.last_name }} {{ rfp.definition.author.user.first_name }}</h5>
+                <p><i>Дата публикации- {{ rfp.definition.date }}</i></p>
+            </div>
+            <div class="col-md-1">
+                <a href="#" id="favorites" data-toggle="tooltip" data-placement="bottom"
+                   title="Добавить в избранное"><i class=" fa fa-heart"></i></a>
+            </div>
+        </div>
+        <p>{{ rfp.definition.description }}</p>
+        <h4>Примеры</h4>
+        {% for example in rfp.definition.examples.all %}
+            <div class="jumbotron">
+                <p>{{ forloop.counter }}) &nbsp {{ example.example }}</p>
+            </div>
+        {% endfor %}
+        {% for file in rfp.definition.files.all %}
+            <div class="col-sm-5">
+                <img class="img-fluid" id="{{ file.id }}" src="{{ file.image.url }}"
+                     alt="{{ file.header_for_file }}">
+            </div>
+        {% endfor %}
+        <br>
+    </div>
+
+    <form method="post" action="{% url 'website:request_for_definition' rfp.id %}">
+        {% csrf_token %}
+        <div class="form-check">
+            <label for="approve" class="form-check-label">
+                <input type="radio" id="approve" class="form-check-input" name="answer"
+                       value="approve">Подтвердить</label>
+        </div>
+
+        <div class="form-check">
+            <label for="reject" class="form-check-label">
+                <input type="radio" id="reject" class="form-check-input" name="answer" value="reject">
+                Отклонить</label>
+        </div>
+        <div class="form-check">
+            <label for="reject_permanent" class="form-check-label">
+                <input type="radio" id="reject_permanent" class="form-check-input" name="answer"
+                       value="reject_permanent">
+                Отклонить навсегда</label>
+        </div>
+        <div class="comment_reason" style="display: none">
+            Причина отклонения <textarea name="reason" class="form-control"></textarea><br>
+        </div>
+        <input class="btn btn-success" type="submit" value="Отправить"/>
+    </form>
+
+{% endblock %}
+{% block script %}
+    <script>
+        $(document).ready(function () {
+            $("#approve").click(function () {
+                $(".comment_reason").hide();
+            });
+            $("#reject_permanent").click(function () {
+                $(".comment_reason").show();
+            });
+            $("#reject").click(function () {
+                $(".comment_reason").show();
+            });
+        });
+    </script>
 {% endblock %}

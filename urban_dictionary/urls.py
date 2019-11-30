@@ -14,9 +14,12 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.conf.urls import url
+from django.conf.urls.static import static
 from django.contrib import admin
 from django.urls import path, include
 from django.views.generic import RedirectView
+
+from urban_dictionary import settings
 
 urlpatterns = [
     path(r'admin/', admin.site.urls),
@@ -25,3 +28,6 @@ urlpatterns = [
     path(r'accounts/', include('django.contrib.auth.urls')),
     path(r'', RedirectView.as_view(url='/urban/', permanent=True)),
 ]
+
+if settings.DEBUG:
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
