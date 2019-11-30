@@ -17,7 +17,8 @@ from website.models import Term, STATUSES
 
 
 def main_page(request):
-    return render(request, 'website/base/base_page.html', {})
+    return render(request, 'website/base/base_page.html',
+                  {'definitions': Definition.objects.all()})
 
 
 @login_required
@@ -47,6 +48,7 @@ def update_profile(request):
     })
 
 
+@login_required
 def page_create_definition(request):
     if request.method == 'POST':
         # TODO проверка на уникальность
@@ -78,11 +80,9 @@ def page_create_definition(request):
 def definition(request, id):
     return render(request, "website/definition/definition.html", {"def": Definition.objects.get(id=id)})
 
-
 class TermView(View):
 
     def get(self, request, pk):
         term = Term.objects.get(pk=pk)
         return render(request, 'website/term_page.html',
-                      {'term': term,
-                       })
+                      {'term': term,})

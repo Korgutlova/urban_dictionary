@@ -3,28 +3,7 @@ from django.db import models
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 
-ROLE_CHOICES = (
-    (1, 'Пользователь'),
-    (2, 'Модератор'),
-    (3, 'Администратор'),
-)
-STATUSES = (
-    (1, "Активный"),
-    (2, "Заблокированный"),
-    (3, "Неподтвержденная регистрация")
-)
-
-STATUSES_FOR_REQUESTS = (
-    (1, "Новый"),
-    (2, "Отклонен"),
-    (3, "Опубликован"),
-    (4, "Навсегда отклонен")
-)
-
-ESTIMATE = (
-    (1, "Like"),
-    (2, "Dislike"),
-)
+from website.enums import ROLE_CHOICES, STATUSES, STATUSES_FOR_REQUESTS, RATING_VALUES
 
 
 class CustomUser(models.Model):
@@ -72,6 +51,12 @@ class Definition(models.Model):
 
     def __str__(self):
         return "Определение %s - автор %s" % (self.term, self.author)
+
+    def get_likes(self):
+        return self.estimates.filter(estimate=1).count()
+
+    def get_dislikes(self):
+        return self.estimates.filter(estimate=2).count()
 
 
 class Example(models.Model):
@@ -129,13 +114,13 @@ class Comment(models.Model):
         return "Комментарий %s от %s " % (self.text, self.author)
 
 
-class Estimate(models.Model):
+class Rating(models.Model):
     definition = models.ForeignKey(Definition, related_name='estimates', on_delete=models.CASCADE,
                                    blank=False, null=False, verbose_name='Ссылка на определение')
     user = models.ForeignKey(CustomUser, related_name='estimates', on_delete=models.CASCADE,
                              blank=False, null=False, verbose_name='Пользователь')
-    estimate = models.IntegerField(choices=ESTIMATE, blank=False, null=False,
-                                   default=ESTIMATE[0][0],
+    estimate = models.IntegerField(choices=RATING_VALUES, blank=False, null=False,
+                                   default=RATING_VALUES[0][0],
                                    verbose_name="Оценка")
 
     def __str__(self):
