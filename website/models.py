@@ -58,6 +58,9 @@ class Definition(models.Model):
     def get_dislikes(self):
         return self.estimates.filter(estimate=2).count()
 
+    def get_primary_example(self):
+        return self.examples.get(primary=True).example
+
 
 class Example(models.Model):
     definition = models.ForeignKey(Definition, related_name='examples', on_delete=models.CASCADE,

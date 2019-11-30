@@ -1,0 +1,46 @@
+{% extends 'website/base/base_page.html' %}
+{% block content %}
+    {% for definition in definitions %}
+        <div style="margin: 30px">
+            <br>
+            <div class="row">
+                <div class="col-md-5">
+                    <a href="definition/{{ definition.term.id }}"><h3>{{ definition.term.name }}</h3></a>
+                </div>
+                <div class="col-md-6">
+                    <h5>Автор статьи
+                        - {{ definition.author.user.last_name }} {{ definition.author.user.first_name }}</h5>
+                    <p><i>Дата публикации- {{ definition.date }}</i></p>
+                </div>
+                <div class="col-md-1">
+                    <a href="#" id="favorites" data-toggle="tooltip" data-placement="bottom"
+                       title="Добавить в избранное"><i class=" fa fa-heart"></i></a>
+                </div>
+            </div>
+
+            <p>{{ definition.description }}</p>
+            <h3>Примеры</h3>
+            <div class="jumbotron">
+                <p>{{ definition.get_primary_example }}</p>
+            </div>
+            {#                        <h4>Теги</h4>#}
+            {#                        <div>#}
+            {#                            {% if definition.tags.all %}#}
+            {#                                {% for tag in definition.tags.all %}#}
+            {#                                    <a href="#">#{{ tag }}</a>#}
+            {#                                {% endfor %}#}
+            {#                            {% else %}#}
+            {#                                <a href="#">#пока нет тегов</a>#}
+            {#                                <a href="#">#потом удалю</a>#}
+            {#                            {% endif %}#}
+            {#                        </div>#}
+            <hr>
+            <button class="btn btn-success"><i class="fa fa-thumbs-up">&nbsp{{ definition.get_likes }}</i></button>
+            <button class="btn btn-danger" style="margin-left: 5px"><i
+                    class="fa fa-thumbs-down">&nbsp{{ definition.get_dislikes }}</i>
+            </button>
+            <br>
+            <br>
+        </div>
+    {% endfor %}
+{% endblock %}
