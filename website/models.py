@@ -45,9 +45,9 @@ class Definition(models.Model):
                              blank=False, null=False, verbose_name='Термин')
     description = models.TextField(verbose_name="Описание термина")
     date = models.DateTimeField(blank=True, verbose_name="Дата публикации", null=True)
-    author = models.ForeignKey(CustomUser, related_name='definitions', on_delete=models.SET_NULL,
-                               blank=True, null=True, verbose_name='Автор')
-    source = models.TextField(verbose_name="Ссылка на источник/первоисточник", default=None)
+    author = models.ForeignKey(CustomUser, related_name='definitions', on_delete=models.CASCADE,
+                               blank=False, null=False, verbose_name='Автор')
+    source = models.TextField(verbose_name="Ссылка на источник/первоисточник", default=None, blank=True, null=True)
 
     def __str__(self):
         return "Определение %s - автор %s" % (self.term, self.author)
