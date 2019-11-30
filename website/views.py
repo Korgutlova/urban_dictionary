@@ -1,10 +1,13 @@
+import time
+
 from django.contrib.auth.decorators import login_required
+from django.core.files.storage import FileSystemStorage
 from django.db import transaction
 from django.http import HttpResponse
 from django.shortcuts import render, redirect
 
 from website.forms import EditUserForm, EditProfileForm
-from website.models import Definition, Term, CustomUser, Example
+from website.models import Definition, Term, CustomUser, Example, UploadData
 
 # Create your views here.
 from django.views import View
@@ -46,6 +49,7 @@ def update_profile(request):
 
 def page_create_definition(request):
     if request.method == 'POST':
+        # TODO проверка на уникальность
         term = Term(name=request.POST["name"])
         term.save()
         definition = Definition(term=term, description=request.POST["description"],
@@ -58,6 +62,14 @@ def page_create_definition(request):
         for i, ex in enumerate(examples):
             example = Example(example=ex, primary=True if primary == i else False, definition=definition)
             example.save()
+        for f, h in zip(request.FILES.getlist("upload_data"), request.POST.getlist("header")):
+            print(f)
+            link_file = "%s/%s/%s.%s" % (definition.author.id, definition.id, int(time.time() * 1000), f.name.split(".")[1])
+            print(link_file)
+            fs = FileSystemStorage()
+            filename = fs.save(link_file, f)
+            u = UploadData(header_for_file=h, definition=definition, image=filename)
+            u.save()
         return redirect("website:definition", definition.id)
     return render(request, "website/definition/create_definition.html", {})
 

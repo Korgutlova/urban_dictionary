@@ -146,3 +146,7 @@ EMAIL_HOST_USER = env('EMAIL_ADDRESS')
 EMAIL_HOST_PASSWORD = env('EMAIL_PASSWORD')
 EMAIL_USE_TLS = True
 DEFAULT_FROM_EMAIL = 'Современный Словарь'
+
+MEDIA_URL = '/media/'
+
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')

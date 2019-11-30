@@ -1,35 +1,59 @@
 {% extends 'website/base/base_page.html' %}
 {% block content %}
-    <form method="post" action="{% url 'website:create_definition' %}">
+    <form method="post" action="{% url 'website:create_definition' %}" enctype="multipart/form-data">
         {% csrf_token %}
         Название<input type="text" name="name" class="form-control"><br>
         Описание<textarea name="description" class="form-control"></textarea><br>
-        Примеры:<br>
-        Пример 1<textarea name="examples" class="form-control"></textarea>
-        <div class="form-check">
-            <label class="form-check-label">
-                <input type="radio" class="form-check-input" name="primary" value="0">Основной
-            </label>
-        </div>
-        <br>
-        Пример 2<textarea name="examples" class="form-control"></textarea>
-        <div class="form-check">
-            <label class="form-check-label">
-                <input type="radio" class="form-check-input" name="primary" value="1">Основной
-            </label>
-        </div>
-        <br>
-        <button id="add_example" class="btn btn-outline-secondary">Добавить еще пример</button>
-        <br>
         Ссылка на первоисточник<input name="source" class="form-control" type="text"><br>
-        Прикрепить файлы <br>
-        Файл 1 <input class="form-control-file" type="file" name="upload_data"><br>
-        Файл 2 <input class="form-control-file" type="file" name="upload_data"><br>
-        <button id="add_file" class="btn btn-outline-secondary">Добавить еще файл</button>
+        Примеры:<br>
+        <div class="example">
+            Пример 1<textarea name="examples" class="form-control"></textarea>
+            <div class="form-check">
+                <label class="form-check-label">
+                    <input type="radio" class="form-check-input" name="primary" value="0">Основной
+                </label>
+            </div>
+        </div>
+        <br>
+        <a id="add_example" class="btn btn-outline-secondary">Добавить еще пример</a>
+        <br>
+        Прикрепить файлы к статье
+        <div class="file">
+             Файл 1 <input class="form-control-file" type="file" name="upload_data">
+            <label> Подпись фотографии
+                <input name="header" class="form-control" type="text">
+            </label><br>
+        </div>
+
+        <a id="add_file" class="btn btn-outline-secondary">Добавить еще файл</a>
         <br><br>
-        <button class="btn btn-success" type="submit">Сохранить</button>
+        <input class="btn btn-success" type="submit" value="Сохранить"/>
     </form>
 {% endblock %}
 {% block script %}
-    {#    TO DO: create method for dynamic created fields #}
+    <script>
+        $(document).ready(function () {
+            $("#add_example").click(function () {
+                var count = $(".example").length;
+                $(".example:last").after("<div class=\"example\">\n" +
+                    "            Пример " + (count + 1) + " <textarea name=\"examples\" class=\"form-control\"></textarea>\n" +
+                    "            <div class=\"form-check\">\n" +
+                    "                <label class=\"form-check-label\">\n" +
+                    "                    <input type=\"radio\" class=\"form-check-input\" name=\"primary\" value=\"" + count + "\">Основной\n" +
+                    "                </label>\n" +
+                    "            </div>\n" +
+                    "            <br>\n" +
+                    "        </div>");
+            });
+            $("#add_file").click(function () {
+                var count = $(".file").length + 1;
+                $(".file:last").after("<div class=\"file\">\n" +
+                    "             Файл " + count + "<input class=\"form-control-file\" type=\"file\" name=\"upload_data\">\n" +
+                    "            <label> Подпись фотографии\n" +
+                    "                <input name=\"header\" class=\"form-control\" type=\"text\">\n" +
+                    "            </label><br>\n" +
+                    "        </div>");
+            });
+        });
+    </script>
 {% endblock %}
