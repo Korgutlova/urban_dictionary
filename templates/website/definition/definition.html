@@ -1,0 +1,9 @@
+{% extends 'website/base/base_page.html' %}
+{% block title %}
+    Определение {{ def.term }}
+{% endblock %}
+{% block content %}
+    <h3> Термин - {{ def.term }}</h3>
+    <h4>Описание {{ def.description }}</h4>
+    <h4>Ссылка на источник <a href="{{ def.source }}">{{ def.source }}</a></h4>
+{% endblock %}
