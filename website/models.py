@@ -1,5 +1,7 @@
 from django.contrib.auth.models import User
 from django.db import models
+from django.db.models.signals import post_save
+from django.dispatch import receiver
 
 ROLE_CHOICES = (
     (1, 'Пользователь'),
@@ -32,13 +34,24 @@ class CustomUser(models.Model):
     role = models.IntegerField(choices=ROLE_CHOICES, blank=False, null=False, default=ROLE_CHOICES[0][0],
                                verbose_name="Роль")
     date_registration = models.DateTimeField(auto_now_add=True, blank=False, verbose_name="Дата регистрации")
-    status = models.IntegerField(choices=STATUSES, blank=False, null=False, default=STATUSES[0][0],
+    status = models.IntegerField(choices=STATUSES, blank=False, null=False, default=STATUSES[2][0],
                                  verbose_name="Статус")
 
     # link_photo
 
     def __str__(self):
-        return self.user.name
+        return self.user.username
+
+
+@receiver(post_save, sender=User)
+def create_user_profile(sender, instance, created, **kwargs):
+    if created:
+        CustomUser.objects.create(user=instance)
+
+
+@receiver(post_save, sender=User)
+def save_user_profile(sender, instance, **kwargs):
+    instance.custom_user.save()
 
 
 class Term(models.Model):
@@ -52,13 +65,23 @@ class Definition(models.Model):
     term = models.ForeignKey(Term, related_name='definitions', on_delete=models.CASCADE,
                              blank=False, null=False, verbose_name='Термин')
     description = models.TextField(verbose_name="Описание термина")
-    examples = models.TextField(verbose_name="Примеры использования")
-    date = models.DateTimeField(blank=True, verbose_name="Дата публикации")
+    date = models.DateTimeField(blank=True, verbose_name="Дата публикации", null=True)
     author = models.ForeignKey(CustomUser, related_name='definitions', on_delete=models.SET_NULL,
                                blank=True, null=True, verbose_name='Автор')
+    source = models.TextField(verbose_name="Ссылка на источник/первоисточник", default=None)
 
     def __str__(self):
         return "Определение %s - автор %s" % (self.term, self.author)
+
+
+class Example(models.Model):
+    definition = models.ForeignKey(Definition, related_name='examples', on_delete=models.CASCADE,
+                                   blank=False, null=False, verbose_name='Ссылка на определение')
+    example = models.TextField(verbose_name="Пример использования")
+    primary = models.BooleanField(default=False, blank=False, null=False, verbose_name="Основной пример")
+
+    def __str__(self):
+        return "Пример %s - %s" % (self.example, self.primary)
 
 
 class UploadData(models.Model):
