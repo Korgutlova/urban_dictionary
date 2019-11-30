@@ -55,7 +55,7 @@ def update_profile(request):
 
 
 @login_required
-def page_create_definition(request):
+def create_definition(request):
     if request.method == 'POST':
         # TODO проверка на уникальность
         term = Term.objects.filter(name=request.POST["name"]).first()
@@ -86,7 +86,7 @@ def page_create_definition(request):
 
 
 def definition(request, pk):
-    return render(request, "website/definition/definition.html", {"def": Definition.objects.get(id=pk)})
+    return render(request, "website/definition/definition.html", {"definition": Definition.objects.get(id=pk)})
 
 
 

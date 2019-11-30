@@ -5,8 +5,7 @@
             <br>
             <div class="row">
                 <div class="col-md-5">
-                    <a href="term/{{ definition.term.id }}"><h3>{{ definition.term.name }}</h3></a>
-                    <a href={% url 'website:term' %}><h3>{{ definition.term.name }}</h3></a>
+                    <a href={% url 'website:term' definition.term.id %}><h3>{{ definition.term.name }}</h3></a>
                 </div>
                 <div class="col-md-6">
                     <h5>Автор статьи
