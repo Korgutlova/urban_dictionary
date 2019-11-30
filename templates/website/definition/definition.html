@@ -18,12 +18,15 @@
                    title="Добавить в избранное"><i class=" fa fa-heart"></i></a>
             </div>
         </div>
-
         <p>{{ definition.description }}</p>
         <h3>Примеры</h3>
         <div class="jumbotron">
             <p>{{ definition.examples }}</p>
         </div>
+        {% for file in definition.files.all %}
+            {# TO DO отображать файлы #}
+            <h1>{{ file.header_for_file }}</h1>
+        {% endfor %}
         <hr>
         <button class="btn btn-success"><i class="fa fa-thumbs-up">&nbsp{{ definition.get_likes }}</i></button>
         <button class="btn btn-danger" style="margin-left: 5px"><i

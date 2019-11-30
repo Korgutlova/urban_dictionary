@@ -10,6 +10,8 @@ urlpatterns = [
     path(r'term/<int:pk>',  TermView.as_view(), name='term'),
     path(r'activate_user/', activate_user, name='activate_user'),
     path(r'definition/<int:pk>', definition, name='definition'),
+    path(r'definition/check/<int:pk>', request_for_definition, name='request_for_definition'),
+    path(r'page_not_found/', page_not_found, name='page_not_found'),
     path(r'definition/like', like, name='like'),
     path(r'definition/dislike', dislike, name='dislike'),
 ]

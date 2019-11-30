@@ -21,6 +21,13 @@ class CustomUser(models.Model):
     def __str__(self):
         return self.user.username
 
+    def is_moderator(self):
+        return self.role == ROLE_CHOICES[1][0]
+
+    def is_admin(self):
+        print("1")
+        return self.role == ROLE_CHOICES[2][0]
+
 
 @receiver(post_save, sender=User)
 def create_user_profile(sender, instance, created, **kwargs):
@@ -94,7 +101,7 @@ class RequestForPublication(models.Model):
     old_request = models.ForeignKey("self", blank=True, null=True, verbose_name="Старый запрос на публикацию",
                                     on_delete=models.SET_NULL)
 
-    date_creation = models.DateTimeField(auto_now_add=True, blank=False, verbose_name="Дата создания запроса")
+    date_creation = models.DateTimeField(blank=False, verbose_name="Дата создания запроса")
 
     def __str__(self):
         return "Запрос на публикацию определения %s" % self.definition

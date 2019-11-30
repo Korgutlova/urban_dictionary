@@ -1,3 +1,4 @@
+import datetime
 import time
 
 from django.contrib.auth.decorators import login_required
@@ -6,20 +7,20 @@ from django.db import transaction
 from django.http import HttpResponse
 from django.shortcuts import render, redirect, get_object_or_404
 from django.views.decorators.http import require_POST
+
 try:
     from django.utils import simplejson as json
 except ImportError:
     import json
 
 from website.forms import EditUserForm, EditProfileForm
-from website.models import Definition, Term, CustomUser, Example, UploadData, Rating
+from website.models import Definition, Term, CustomUser, Example, UploadData, Rating, RequestForPublication
 
 # Create your views here.
 from django.views import View
 from django.views.generic import ListView, DetailView
 
 from website.models import Term, STATUSES
-
 
 
 def main_page(request):
@@ -56,6 +57,7 @@ def update_profile(request):
 
 @login_required
 def create_definition(request):
+    current_user = CustomUser.objects.get(user=request.user)
     if request.method == 'POST':
         # TODO проверка на уникальность
         term = Term.objects.filter(name=request.POST["name"]).first()
@@ -64,8 +66,14 @@ def create_definition(request):
             term.save()
         definition = Definition(term=term, description=request.POST["description"],
                                 source=request.POST["source"],
-                                author=CustomUser.objects.get(user=request.user))
+                                author=current_user)
         definition.save()
+        if current_user.is_moderator() or current_user.is_admin():
+            definition.date = time.time()
+            definition.save()
+        else:
+            rfp = RequestForPublication(definition=definition, date_creation=datetime.datetime.now())
+            rfp.save()
         examples = request.POST.getlist("examples")
         primary = int(request.POST.get("primary"))
         print(primary)
@@ -85,9 +93,24 @@ def create_definition(request):
     return render(request, "website/definition/create_definition.html", {})
 
 
+@login_required
+def request_for_definition(request, pk):
+    current_user = CustomUser.objects.get(user=request.user)
+    if not current_user.is_admin():
+        return redirect("website:page_not_found")
+    rfp = get_object_or_404(RequestForPublication, pk=pk)
+    if request.method == 'POST':
+        pass
+    return render(request, "website/definition/admin_definition_check.html",
+                  {"definition": rfp})
+
+
+def page_not_found(request):
+    return render(request, "website/base/page_not_found.html", )
+
+
 def definition(request, pk):
     return render(request, "website/definition/definition.html", {"definition": Definition.objects.get(id=pk)})
-
 
 
 class TermView(View):
