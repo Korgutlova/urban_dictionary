@@ -35,12 +35,48 @@
             {#                            {% endif %}#}
             {#                        </div>#}
             <hr>
-            <button class="btn btn-success"><i class="fa fa-thumbs-up">&nbsp{{ definition.get_likes }}</i></button>
-            <button class="btn btn-danger" style="margin-left: 5px"><i
-                    class="fa fa-thumbs-down">&nbsp{{ definition.get_dislikes }}</i>
-            </button>
+            <button id="like" name="{{ definition.pk }}" class="btn btn-success"><i class="fa fa-thumbs-up">&nbsp{{ definition.get_likes }}</i></button>
+            <button id="dislike" name="{{ definition.pk }}" class="btn btn-danger"><i class="fa fa-thumbs-up">&nbsp{{ definition.get_dislikes }}</i></button></button>
             <br>
             <br>
         </div>
     {% endfor %}
+{% endblock %}
+
+{% block script %}
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.js"></script>
+    <script>
+        $('#like').click(function(){
+            $.ajax({
+                type: "POST",
+                url: "{% url 'website:like' %}",
+                data: {'def_id': $(this).attr('name'), 'csrfmiddlewaretoken': '{{ csrf_token }}'},
+                dataType: "json",
+                success: function(response) {
+                    $('#like').html("<i class=\"fa fa-thumbs-up\">&nbsp" + response.likes_count + "</i>");
+                    $('#dislike').html("<i class=\"fa fa-thumbs-up\">&nbsp" + response.dislikes_count + "</i>");
+                },
+                error: function(rs, e) {
+                    alert(rs.responseText);
+                }
+            });
+        })
+    </script>
+    <script>
+        $('#dislike').click(function(){
+            $.ajax({
+                type: "POST",
+                url: "{% url 'website:dislike' %}",
+                data: {'def_id': $(this).attr('name'), 'csrfmiddlewaretoken': '{{ csrf_token }}'},
+                dataType: "json",
+                success: function(response) {
+                    $('#like').html("<i class=\"fa fa-thumbs-up\">&nbsp" + response.likes_count + "</i>");
+                    $('#dislike').html("<i class=\"fa fa-thumbs-up\">&nbsp" + response.dislikes_count + "</i>");
+                },
+                error: function(rs, e) {
+                    alert(rs.responseText);
+                }
+            });
+        })
+    </script>
 {% endblock %}

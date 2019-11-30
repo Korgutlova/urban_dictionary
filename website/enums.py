@@ -17,6 +17,6 @@ STATUSES_FOR_REQUESTS = (
 )
 
 RATING_VALUES = (
+    (0, "Dislike"),
     (1, "Like"),
-    (2, "Dislike"),
 )

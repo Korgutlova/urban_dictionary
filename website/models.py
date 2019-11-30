@@ -56,7 +56,7 @@ class Definition(models.Model):
         return self.estimates.filter(estimate=1).count()
 
     def get_dislikes(self):
-        return self.estimates.filter(estimate=2).count()
+        return self.estimates.filter(estimate=0).count()
 
     def get_primary_example(self):
         return self.examples.get(primary=True).example
