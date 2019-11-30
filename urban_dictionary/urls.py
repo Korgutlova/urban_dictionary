@@ -19,9 +19,9 @@ from django.urls import path, include
 from django.views.generic import RedirectView
 
 urlpatterns = [
-    url(r'^admin/', admin.site.urls),
-    url(r'^urban/', include('website.urls', namespace="website")),
-    url(r'^accounts/', include('django_registration.backends.activation.urls')),
-    url(r'^accounts/', include('django.contrib.auth.urls')),
-    url(r'^$', RedirectView.as_view(url='/urban/', permanent=True)),
+    path(r'admin/', admin.site.urls),
+    path(r'urban/', include('website.urls', namespace="website")),
+    path(r'accounts/', include('django_registration.backends.activation.urls')),
+    path(r'accounts/', include('django.contrib.auth.urls')),
+    path(r'', RedirectView.as_view(url='/urban/', permanent=True)),
 ]

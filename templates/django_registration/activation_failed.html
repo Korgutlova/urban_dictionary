@@ -1,4 +1,11 @@
 {% extends 'website/base/base_page.html' %}
+{% block title %}Ошибка{% endblock %}
 {% block content %}
-{{ activation_error.message }}
+    <div class="container">
+        <div class="row">
+            <div class="col-sm-9 mx-auto" style="color: red">
+                {{ activation_error.message }}
+            </div>
+        </div>
+    </div>
 {% endblock %}

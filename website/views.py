@@ -58,8 +58,10 @@ def update_profile(request):
 def page_create_definition(request):
     if request.method == 'POST':
         # TODO проверка на уникальность
-        term = Term(name=request.POST["name"])
-        term.save()
+        term = Term.objects.filter(name=request.POST["name"]).first()
+        if term is None:
+            term = Term(name=request.POST["name"])
+            term.save()
         definition = Definition(term=term, description=request.POST["description"],
                                 source=request.POST["source"],
                                 author=CustomUser.objects.get(user=request.user))
@@ -73,7 +75,7 @@ def page_create_definition(request):
         for f, h in zip(request.FILES.getlist("upload_data"), request.POST.getlist("header")):
             print(f)
             link_file = "%s/%s/%s.%s" % (
-            definition.author.id, definition.id, int(time.time() * 1000), f.name.split(".")[1])
+                definition.author.id, definition.id, int(time.time() * 1000), f.name.split(".")[1])
             print(link_file)
             fs = FileSystemStorage()
             filename = fs.save(link_file, f)
@@ -83,8 +85,9 @@ def page_create_definition(request):
     return render(request, "website/definition/create_definition.html", {})
 
 
-def definition(request, id):
-    return render(request, "website/definition/definition.html", {"def": Definition.objects.get(id=id)})
+def definition(request, pk):
+    return render(request, "website/definition/definition.html", {"def": Definition.objects.get(id=pk)})
+
 
 
 class TermView(View):
@@ -92,7 +95,7 @@ class TermView(View):
     def get(self, request, pk):
         term = Term.objects.get(pk=pk)
         return render(request, 'website/term_page.html',
-                      {'term': term,})
+                      {'term': term})
 
 
 @require_POST
