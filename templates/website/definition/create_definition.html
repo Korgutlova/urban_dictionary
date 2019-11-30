@@ -1,6 +1,9 @@
 {% extends 'website/base/base_page.html' %}
+{% block title %}
+    Создание определения
+{% endblock %}
 {% block content %}
-    <form method="post" action="{% url 'website:create_definition' %}" enctype="multipart/form-data">
+    <form method="post" action="{% url 'website:page_create_definition' %}" enctype="multipart/form-data">
         {% csrf_token %}
         Название<input type="text" name="name" class="form-control"><br>
         Описание<textarea name="description" class="form-control"></textarea><br>

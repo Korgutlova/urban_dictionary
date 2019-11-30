@@ -64,7 +64,8 @@ def page_create_definition(request):
             example.save()
         for f, h in zip(request.FILES.getlist("upload_data"), request.POST.getlist("header")):
             print(f)
-            link_file = "%s/%s/%s.%s" % (definition.author.id, definition.id, int(time.time() * 1000), f.name.split(".")[1])
+            link_file = "%s/%s/%s.%s" % (
+            definition.author.id, definition.id, int(time.time() * 1000), f.name.split(".")[1])
             print(link_file)
             fs = FileSystemStorage()
             filename = fs.save(link_file, f)
@@ -75,7 +76,7 @@ def page_create_definition(request):
 
 
 def definition(request, id):
-    return HttpResponse("Page some definition %s" % id)
+    return render(request, "website/definition/definition.html", {"def": Definition.objects.get(id=id)})
 
 
 class TermView(View):
