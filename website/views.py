@@ -6,6 +6,7 @@ from django import template
 from django.contrib.auth.decorators import login_required
 from django.core.files.storage import FileSystemStorage
 from django.db import transaction
+from django.db.models import Q
 from django.http import HttpResponse
 from django.shortcuts import render, redirect, get_object_or_404
 from django.views.decorators.http import require_POST
@@ -219,3 +220,15 @@ def random_definition(request):
     definitons = [d for d in Definition.objects.all() if d.is_publish()]
     definition = random.choice(definitons)
     return redirect("website:definition", definition.id)
+
+
+def search(request):
+    query = request.GET.get('q')
+    object_list = Definition.objects.filter(
+        Q(description__icontains=query) | Q(term__name__icontains=query)
+    )
+    if object_list:
+        return render(request, 'website/main_page.html',
+                      {'definitions': object_list})
+    else:
+        return redirect("website:page_not_found")
