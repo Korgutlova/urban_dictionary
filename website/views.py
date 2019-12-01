@@ -5,6 +5,7 @@ from django import template
 from django.contrib.auth.decorators import login_required
 from django.core.files.storage import FileSystemStorage
 from django.db import transaction
+from django.db.models import Q
 from django.http import HttpResponse
 from django.shortcuts import render, redirect, get_object_or_404
 from django.views.decorators.http import require_POST
@@ -29,7 +30,7 @@ from website.models import Term, STATUSES
 def main_page(request):
     return render(request, 'website/main_page.html',
                   {'definitions': Definition.get_top_for_week})
-                  # {'definitions': Definition.objects.all})
+    # {'definitions': Definition.objects.all})
 
 
 @login_required
@@ -204,3 +205,15 @@ def favourites(request):
     return render(request, 'website/main_page.html',
                   # {'definitions': Definition.get_top_for_week})
                   {'definitions': result})
+
+
+def search(request):
+    query = request.GET.get('q')
+    object_list = Definition.objects.filter(
+        Q(description__icontains=query) | Q(term__name__icontains=query)
+    )
+    if object_list:
+        return render(request, 'website/main_page.html',
+                      {'definitions': object_list})
+    else:
+        return redirect("website:page_not_found")

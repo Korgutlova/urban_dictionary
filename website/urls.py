@@ -16,4 +16,5 @@ urlpatterns = [
     path(r'definition/dislike', dislike, name='dislike'),
     path(r'favourite/', favourite, name='favourite'),
     path(r'favourites/', favourites, name='favourites_list'),
+    path(r'search/', search, name='search'),
 ]

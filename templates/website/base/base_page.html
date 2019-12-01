@@ -64,9 +64,9 @@
         </div>
         <ul class="navbar-nav flex-row mr-auto navbar-fixed col-md-10" style="padding-top: 40px;">
             <li class="nav-item active col-md-12">
-                <form class="form-inline">
+                <form action="{% url 'website:search' %}" method="get" class="form-inline">
                     <div class="input-group col-md-12">
-                        <input class="form-control form-control-lg" type="search" placeholder="Поиск..."
+                        <input name="q" class="form-control form-control-lg" type="search" placeholder="Поиск..."
                                aria-label="Search">
                         <div class="input-group-append">
                             <button class="btn btn-dark" type="submit"><i class="fa fa-search"></i></button>
@@ -95,7 +95,7 @@
                         <p><i>Дата публикации- 23:41 06.11.2019г</i></p>
                     </div>
                     <div class="col-md-1">
-                        <a href="#" id="favorites" data-toggle="tooltip" data-placement="botton"
+                        <a href="#" id="favorites" data-toggle="tooltip" data-placement="bottom"
                            title="Добавить в избранное"><i class=" fa fa-heart"></i></a>
                     </div>
                 </div>
