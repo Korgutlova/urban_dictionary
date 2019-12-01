@@ -69,6 +69,11 @@ class Definition(models.Model):
     def get_primary_example(self):
         return self.examples.get(primary=True).example
 
+    def is_publish(self):
+        if self.date is None:
+            return False
+        return True
+
     @classmethod
     def get_top_for_week(cls):
         result = []

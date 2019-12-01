@@ -36,23 +36,23 @@
     <div class="collapse navbar-collapse flex-column" id="navbarToggler">
         <div class="ml-auto">
             <ul class="navbar-nav flex-row">
-                <li class="nav-item active horizontal first">
-                    <a class="nav-link" href="#">Определения</a>
-                </li>
-                <li class="nav-item horizontal">
-                    <a class="nav-link" href="#">Мои определения</a>
-                </li>
-                <li class="nav-item horizontal">
-                    <a class="nav-link" href="#">Избранное</a>
-                </li>
-                <li class="nav-item horizontal">
-                    <a class="nav-link" href="#">Поддержка</a>
-                </li>
                 {% if not user.is_authenticated %}
+                    <li class="nav-item horizontal first">
+                        <a class="nav-link" href="#">Определения</a>
+                    </li>
+                    <li class="nav-item horizontal">
+                        <a class="nav-link" href="#">Поддержка</a>
+                    </li>
                     <li class="nav-item horizontal">
                         <a class="nav-link" href="{% url 'login' %}">Войти</a>
                     </li>
                 {% else %}
+                    <li class="nav-item horizontal first">
+                        <a class="nav-link" href="{% url "website:personal_definitions" %}">Мои определения</a>
+                    </li>
+                    <li class="nav-item horizontal">
+                        <a class="nav-link" href="#">Избранное</a>
+                    </li>
                     <li class="nav-item horizontal">
                         <a class="nav-link" href="{% url 'website:update_profile' %}">Редактировать профиль</a>
                     </li>
