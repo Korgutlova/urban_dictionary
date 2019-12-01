@@ -1,3 +1,5 @@
+from datetime import datetime, timedelta, date
+
 from django.contrib.auth.models import User
 from django.db import models
 from django.db.models.signals import post_save
@@ -60,6 +62,28 @@ class Definition(models.Model):
 
     def get_primary_example(self):
         return self.examples.get(primary=True).example
+
+    @classmethod
+    def get_top_for_week(cls):
+        result = []
+        for i in range(7):
+            day = date.today() - timedelta(i)
+            defs = Definition.objects.filter(date__day=day.day, date__month=day.month, date__year=day.year)
+            x = {}
+            for d in defs:
+                if d.get_dislikes() + d.get_likes() >= 10:
+                    try:
+                        x[d] = d.get_likes() / d.get_dislikes()
+                    except ZeroDivisionError:
+                        x[d] = d.get_likes()
+            m = 0
+            top_def = None
+            for d, proportion in x.items():
+                if proportion > m:
+                    top_def = d
+            if top_def:
+                result.append(top_def)
+        return result
 
 
 class Example(models.Model):
