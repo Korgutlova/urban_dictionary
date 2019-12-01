@@ -28,13 +28,22 @@ body {
     font-size: 29px;
 }
 
-#favorites {
+.favorites {
     color: rgba(255,0,0,0.5);
     font-size: 40px;
 }
 
-#favorites:hover{
+.favorites:hover {
     color: #ff0000;
+}
+
+.favoritesadded {
+    color: #ff0000;
+    font-size: 40px;
+}
+
+.favoritesadded:hover {
+    color: rgba(255,0,0,0.5);
 }
 
 .jumbotron{

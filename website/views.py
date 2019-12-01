@@ -1,6 +1,7 @@
 import datetime
 import time
 
+from django import template
 from django.contrib.auth.decorators import login_required
 from django.core.files.storage import FileSystemStorage
 from django.db import transaction
@@ -16,7 +17,7 @@ except ImportError:
     import json
 
 from website.forms import EditUserForm, EditProfileForm
-from website.models import Definition, Term, CustomUser, Example, UploadData, Rating, RequestForPublication
+from website.models import Definition, Term, CustomUser, Example, UploadData, Rating, RequestForPublication, Favorites
 
 # Create your views here.
 from django.views import View
@@ -28,6 +29,7 @@ from website.models import Term, STATUSES
 def main_page(request):
     return render(request, 'website/main_page.html',
                   {'definitions': Definition.get_top_for_week})
+                  # {'definitions': Definition.objects.all})
 
 
 @login_required
@@ -176,3 +178,29 @@ def dislike(request):
         ctx = {'dislikes_count': defin.get_dislikes(), 'likes_count': defin.get_likes()}
         # use mimetype instead of content_type if django < 5
         return HttpResponse(json.dumps(ctx), content_type='application/json')
+
+
+def favourite(request):
+    if request.method == 'POST':
+        user = request.user.custom_user
+        definition_id = request.POST.get('def_id', None)
+        defin = get_object_or_404(Definition, pk=definition_id)
+
+        if defin.favorites.filter(user=user).exists():
+            defin.favorites.get(user=user).delete()
+            colour = 'black'
+        else:
+            Favorites(definition=defin, user=user).save()
+            colour = 'red'
+
+        ctx = {'colour': colour}
+        return HttpResponse(json.dumps(ctx), content_type='application/json')
+
+
+@login_required
+def favourites(request):
+    favs = Favorites.objects.filter(user=request.user.custom_user)
+    result = [fav.definition for fav in favs]
+    return render(request, 'website/main_page.html',
+                  # {'definitions': Definition.get_top_for_week})
+                  {'definitions': result})

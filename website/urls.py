@@ -14,4 +14,6 @@ urlpatterns = [
     path(r'page_not_found/', page_not_found, name='page_not_found'),
     path(r'definition/like', like, name='like'),
     path(r'definition/dislike', dislike, name='dislike'),
+    path(r'favourite/', favourite, name='favourite'),
+    path(r'favourites/', favourites, name='favourites_list'),
 ]

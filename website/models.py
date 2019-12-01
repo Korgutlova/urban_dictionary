@@ -177,7 +177,7 @@ class Blocking(models.Model):
 class Favorites(models.Model):
     definition = models.ForeignKey(Definition, related_name='favorites', on_delete=models.CASCADE,
                                    blank=False, null=False, verbose_name='Ссылка на определение')
-    user = models.ForeignKey(User, related_name='favorites', on_delete=models.CASCADE,
+    user = models.ForeignKey(CustomUser, related_name='favorites', on_delete=models.CASCADE,
                              blank=False, null=False, verbose_name='Ссылка на пользователя')
 
     def __str__(self):
@@ -188,7 +188,7 @@ class Notification(models.Model):
     info = models.TextField(verbose_name="Текст уведомления", blank=False)
     date_creation = models.DateTimeField(auto_now_add=True, blank=False, verbose_name="Дата уведомления")
     action_id = models.CharField(max_length=30, verbose_name="ID события")
-    user = models.ForeignKey(User, related_name='notifications', on_delete=models.CASCADE,
+    user = models.ForeignKey(CustomUser, related_name='notifications', on_delete=models.CASCADE,
                              blank=False, null=False, verbose_name='Ссылка на пользователя')
 
     def __str__(self):
