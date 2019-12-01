@@ -203,7 +203,6 @@ def favourites(request):
     favs = Favorites.objects.filter(user=request.user.custom_user)
     result = [fav.definition for fav in favs]
     return render(request, 'website/main_page.html',
-                  # {'definitions': Definition.get_top_for_week})
                   {'definitions': result})
 
 
