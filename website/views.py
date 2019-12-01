@@ -27,7 +27,7 @@ from website.models import Term, STATUSES
 
 def main_page(request):
     return render(request, 'website/main_page.html',
-                  {'definitions': Definition.objects.all()})
+                  {'definitions': Definition.get_top_for_week})
 
 
 @login_required
