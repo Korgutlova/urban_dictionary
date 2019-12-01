@@ -1,0 +1,14 @@
+{% extends 'website/base/base_page.html' %}
+{% block title %}
+    Запросы на публикацию определений
+{% endblock %}
+{% block content %}
+    <br><br>
+    {% for rfp in rfps %}
+        <div class="jumbotron">
+            <a href="{% url "website:request_for_definition" rfp.id %}">{{ forloop.counter }})
+                &nbsp {{ rfp.definition }}</a>
+        </div>
+    {% endfor %}
+    <br><br>
+{% endblock %}

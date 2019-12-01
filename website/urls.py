@@ -19,4 +19,5 @@ urlpatterns = [
     path(r'favourite/', favourite, name='favourite'),
     path(r'favourites/', favourites, name='favourites_list'),
     path(r'search/', search, name='search'),
+    path(r'requests/', requests_pub, name='requests_pub'),
 ]

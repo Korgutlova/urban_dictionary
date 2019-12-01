@@ -48,17 +48,30 @@
                     </li>
                 {% else %}
                     <li class="nav-item horizontal first">
-                        <a class="nav-link" href="{% url "website:personal_definitions" %}">Мои определения</a>
+                        <a class="nav-link" href="#">Определения</a>
                     </li>
-                    <li class="nav-item horizontal">
-                        <a class="nav-link" href="{% url "website:favourites_list" %}">Избранное</a>
-                    </li>
+                    {% if not user.custom_user.is_admin %}
+                        <li class="nav-item horizontal">
+                            <a class="nav-link" href="{% url "website:personal_definitions" %}">Мои определения</a>
+                        </li>
+                        <li class="nav-item horizontal">
+                            <a class="nav-link" href="{% url "website:favourites_list" %}">Избранное</a>
+                        </li>
+                        <li class="nav-item horizontal">
+                            <a class="nav-link" href="#">Поддержка</a>
+                        </li>
+                        <li class="nav-item horizontal">
+                            <a class="nav-link" href="{% url 'website:update_profile' %}">Редактировать профиль</a>
+                        </li>
+                    {% endif %}
                     <li class="nav-item horizontal">
                         <a class="nav-link" href="#">Уведомления</a>
                     </li>
-                    <li class="nav-item horizontal">
-                        <a class="nav-link" href="{% url 'website:update_profile' %}">Редактировать профиль</a>
-                    </li>
+                    {% if user.custom_user.is_admin %}
+                        <li class="nav-item horizontal">
+                            <a class="nav-link" href="{% url "website:requests_pub" %}">Запросы на публикацию</a>
+                        </li>
+                    {% endif %}
                     <li class="nav-item horizontal">
                         <a class="nav-link" href="{% url 'logout' %}">Выйти</a>
                     </li>
