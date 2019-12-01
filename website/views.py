@@ -115,7 +115,7 @@ def request_for_definition(request, pk):
                 rfp.status = STATUSES_FOR_REQUESTS[3][0]
             rfp.reason = request.POST["reason"]
         rfp.save()
-        return redirect('website:main_page')
+        return redirect('website:requests_pub')
 
     return render(request, "website/admin/admin_definition_check.html", {"rfp": rfp})
 
@@ -239,3 +239,17 @@ def requests_pub(request):
         return render(request, 'website/admin/requests_for_publication.html',
                       {'rfps': RequestForPublication.objects.filter(status=STATUSES_FOR_REQUESTS[0][0])})
     return redirect("website:page_not_found")
+
+
+def edit_definition(request, pk):
+    definition = Definition.objects.get(id=pk)
+    current_user = request.user.custom_user
+    if definition.author != current_user:
+        return redirect("website:page_not_found")
+    if request.method == "POST":
+        # TO DO
+        # Update old definition
+        # Update rfp if exists
+        pass
+    rfp = RequestForPublication.objects.get(definition=definition)
+    return render(request, "website/definition/edit_definition.html", {"definition": definition, "rfp": rfp})
