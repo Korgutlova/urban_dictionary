@@ -54,6 +54,9 @@
                         <a class="nav-link" href="{% url "website:favourites_list" %}">Избранное</a>
                     </li>
                     <li class="nav-item horizontal">
+                        <a class="nav-link" href="#">Уведомления</a>
+                    </li>
+                    <li class="nav-item horizontal">
                         <a class="nav-link" href="{% url 'website:update_profile' %}">Редактировать профиль</a>
                     </li>
                     <li class="nav-item horizontal">
@@ -74,9 +77,12 @@
                     </div>
                 </form>
             </li>
-            <li class="nav-item active col-md-12">
+            <li class="nav-item col-md-3">
                 <a id="create_icon" href="{% url "website:create_definition" %}"
                    style="color: inherit; font-size: 60px"><i class="fa fa-plus-circle"></i></a>
+                <a type="button" href="{% url "website:random_definition" %}" class="btn" id="random_word"
+                   style="border-radius: 30px/30px; height: 50px;font-size:18px; margin-bottom: 30px; margin-left: 15px; color: #ff7a06; background: #1b1b1b;">Случайное
+                    слово</a>
             </li>
         </ul>
     </div>

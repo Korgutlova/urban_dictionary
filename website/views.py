@@ -1,4 +1,5 @@
 import datetime
+import random
 import time
 
 from django import template
@@ -29,7 +30,7 @@ from website.models import Term, STATUSES
 def main_page(request):
     return render(request, 'website/main_page.html',
                   {'definitions': Definition.get_top_for_week})
-                  # {'definitions': Definition.objects.all})
+    # {'definitions': Definition.objects.all})
 
 
 @login_required
@@ -212,3 +213,9 @@ def favourites(request):
     return render(request, 'website/main_page.html',
                   # {'definitions': Definition.get_top_for_week})
                   {'definitions': result})
+
+
+def random_definition(request):
+    definitons = [d for d in Definition.objects.all() if d.is_publish()]
+    definition = random.choice(definitons)
+    return redirect("website:definition", definition.id)
