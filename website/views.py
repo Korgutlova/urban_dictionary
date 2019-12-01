@@ -127,6 +127,14 @@ def definition(request, pk):
     return render(request, "website/definition/definition.html", {"definition": Definition.objects.get(id=pk)})
 
 
+def personal_definitions(request):
+    if request.user.is_authenticated:
+        current_user = CustomUser.objects.get(user=request.user)
+        return render(request, "website/definition/personal_definitions.html",
+                      {"definitions": Definition.objects.filter(author=current_user)})
+    return redirect("website:page_not_found")
+
+
 class TermView(View):
 
     def get(self, request, pk):
