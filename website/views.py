@@ -72,7 +72,6 @@ def update_profile(request):
 def create_definition(request):
     current_user = CustomUser.objects.get(user=request.user)
     if request.method == 'POST':
-        # TODO проверка на уникальность
         term = Term.objects.filter(name=request.POST["name"]).first()
         if term is None:
             term = Term(name=request.POST["name"])
@@ -105,6 +104,52 @@ def create_definition(request):
 
 
 @login_required
+def edit_definition(request, pk):
+    definition = Definition.objects.get(id=pk)
+    current_user = request.user.custom_user
+    if definition.author != current_user:
+        return redirect("website:page_not_found")
+    rfp = RequestForPublication.objects.get(definition=definition)
+    if request.method == "POST":
+        # TO DO
+        # NEED TO CHECK
+        term = Term.objects.filter(name=request.POST["name"]).first()
+        if term is None:
+            term = Term(name=request.POST["name"])
+            term.save()
+        definition.term = term
+        definition.description = request.POST["description"]
+        definition.source = request.POST["source"],
+        definition.save()
+        if current_user.is_moderator() or current_user.is_admin():
+            definition.date = time.time()
+            definition.save()
+        else:
+            rfp.date_creation = datetime.datetime.now()
+            rfp.status = STATUSES_FOR_REQUESTS[0][0]
+            rfp.save()
+        examples = request.POST.getlist("examples")
+        primary = int(request.POST.get("primary"))
+        for file in definition.files.all():
+            file.delete()
+        for example in definition.examples.all():
+            example.delete()
+        for i, ex in enumerate(examples):
+            example = Example(example=ex, primary=True if primary == i else False, definition=definition)
+            example.save()
+        for f, h in zip(request.FILES.getlist("upload_data"), request.POST.getlist("header")):
+            link_file = "%s/%s/%s.%s" % (
+                definition.author.id, definition.id, int(time.time() * 1000), f.name.split(".")[1])
+            print(link_file)
+            fs = FileSystemStorage()
+            filename = fs.save(link_file, f)
+            u = UploadData(header_for_file=h, definition=definition, image=filename)
+            u.save()
+        return redirect("website:personal_definitions")
+    return render(request, "website/definition/edit_definition.html", {"definition": definition, "rfp": rfp})
+
+
+@login_required
 def request_for_definition(request, pk):
     current_user = CustomUser.objects.get(user=request.user)
     rfp = get_object_or_404(RequestForPublication, pk=pk)
@@ -115,6 +160,7 @@ def request_for_definition(request, pk):
         if answer == "approve":
             rfp.status = STATUSES_FOR_REQUESTS[2][0]
             rfp.definition.date = datetime.datetime.now()
+            rfp.definition.save()
         else:
             if answer == "reject":
                 rfp.status = STATUSES_FOR_REQUESTS[1][0]
@@ -137,7 +183,7 @@ def definition(request, pk):
 
 def personal_definitions(request):
     if request.user.is_authenticated:
-        current_user = CustomUser.objects.get(user=request.user)
+        current_user = request.user.custom_user
         return render(request, "website/definition/personal_definitions.html",
                       {"definitions": Definition.objects.filter(author=current_user)})
     return redirect("website:page_not_found")
@@ -246,17 +292,3 @@ def requests_pub(request):
         return render(request, 'website/admin/requests_for_publication.html',
                       {'rfps': RequestForPublication.objects.filter(status=STATUSES_FOR_REQUESTS[0][0])})
     return redirect("website:page_not_found")
-
-
-def edit_definition(request, pk):
-    definition = Definition.objects.get(id=pk)
-    current_user = request.user.custom_user
-    if definition.author != current_user:
-        return redirect("website:page_not_found")
-    if request.method == "POST":
-        # TO DO
-        # Update old definition
-        # Update rfp if exists
-        pass
-    rfp = RequestForPublication.objects.get(definition=definition)
-    return render(request, "website/definition/edit_definition.html", {"definition": definition, "rfp": rfp})

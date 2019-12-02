@@ -3,11 +3,118 @@
     Редактирование определения
 {% endblock %}
 {% block content %}
-    <h3>Реализация появится позже, сссори</h3>
     {% if rfp %}
-        Причина отклонения определения:
+        <h3>Редактирование определения {{ definiton.name }}</h3>
+        <h5>Причина отклонения определения</h5>
         <div>
-            <p>{{ rfp.reason }}</p>
+            <p style="color:#ed0000;">{{ rfp.reason }}</p>
         </div>
+
+        <form method="post" action="{% url 'website:edit_definition' definition.id %}" enctype="multipart/form-data">
+            {% csrf_token %}
+            Название<input type="text" name="name" class="form-control" value="{{ definition.term }}"><br>
+            Описание<textarea name="description" class="form-control">{{ definition.description }}</textarea><br>
+            Ссылка на первоисточник<input name="source" class="form-control" type="text"
+                                          value="{{ definition.source }}"><br>
+            <strong>Примеры:</strong><br>
+            {% for example in definition.examples.all %}
+                <div class="row example">
+                    <div class="form-group col-md-7">
+                        <label>Пример {{ forloop.counter }}</label>
+                        <textarea name="examples" class="form-control">{{ example.example }}</textarea>
+                    </div>
+                    <div class="form-group col-md-2 form-check" style="margin-top: 50px">
+                        <label class="form-check-label">
+                            <input type="radio" {% if example.primary %} checked {% endif %} class="form-check-input"
+                                   name="primary" value="0">Основной
+                        </label>
+                    </div>
+                    <div class="form-group col-md-3 " style="margin-top: 50px">
+                        <p class="btn btn-danger del_example">Удалить пример</p>
+                    </div>
+                </div>
+            {% endfor %}
+            <br>
+            <a id="add_example" class="btn btn-outline-secondary">Добавить еще пример</a>
+            <br>
+            <h5>Прикрепить файлы к статье</h5>
+            {% for file in definition.files.all %}
+                <div class="row file">
+                    <div class="form-group col-md-4">
+                        <label>Файл {{ forloop.counter }} </label><input class="form-control-file" type="file"
+                                                                         name="upload_data"
+                                                                         value="{{ file.image.url }}">
+                    </div>
+                    <div class="form-group col-md-5">
+                        <label> Подпись к фотографии
+                            <input name="header" class="form-control" type="text" value="{{ file.header_for_file }}">
+                        </label>
+                    </div>
+                    <div class="form-group col-md-3" style="margin-top: 30px">
+                        <p class="btn btn-danger del_file">Удалить файл</p>
+                    </div>
+                </div>
+            {% endfor %}
+
+            <a id="add_file" class="btn btn-outline-secondary">Добавить еще файл</a>
+            <br><br>
+            <input class="btn btn-success" type="submit" value="Сохранить"/>
+        </form>
     {% endif %}
+{% endblock %}
+{% block script %}
+    <script>
+        $(document).ready(function () {
+            $("#add_example").click(function () {
+                var count = $(".example").length;
+                $(".example:last").after("<div class=\"row example\">\n" +
+                    "            <div class=\"form-group col-md-7\">\n" +
+                    "                <label>Пример " + (count + 1) + " </label><textarea name=\"examples\" class=\"form-control\"></textarea>\n" +
+                    "            </div>\n" +
+                    "            <div class=\"form-group col-md-2 form-check\" style=\"margin-top: 50px\">\n" +
+                    "                <label class=\"form-check-label\">\n" +
+                    "                    <input type=\"radio\" class=\"form-check-input\" name=\"primary\" value=\"" + count + "\">Основной\n" +
+                    "                </label>\n" +
+                    "            </div>\n" +
+                    "            <div class=\"form-group col-md-3 \" style=\"margin-top: 50px\">\n" +
+                    "                <p class=\"btn btn-danger del_example\">Удалить пример</p>\n" +
+                    "            </div>\n" +
+                    "        </div>");
+            });
+            $("#add_file").click(function () {
+                var count = $(".file").length + 1;
+                $(".file:last").after("<div class=\"row file\">\n" +
+                    "            <div class=\"form-group col-md-4\">\n" +
+                    "                <label>Файл " + count + "</label><input class=\"form-control-file\" type=\"file\" name=\"upload_data\">\n" +
+                    "            </div>\n" +
+                    "            <div class=\"form-group col-md-5\">\n" +
+                    "                <label> Подпись к фотографии\n" +
+                    "                    <input name=\"header\" class=\"form-control\" type=\"text\">\n" +
+                    "                </label>\n" +
+                    "            </div>\n" +
+                    "            <div class=\"form-group col-md-3\" style=\"margin-top: 30px\">\n" +
+                    "                <p class=\"btn btn-danger del_file\">Удалить файл</p>\n" +
+                    "            </div>\n" +
+                    "        </div>");
+            });
+            $('.container').on('click', '.del_example', function () {
+                if ($(".example").length !== 1) {
+                    $(this).parent().parent().remove();
+                    $(".example").each(function (i) {
+                        $(this).find(".form-check").children().children().val(i);
+                        $(this).find(".col-md-7").children().first().text("Пример " + (i + 1));
+                    });
+                }
+            });
+
+            $('.container').on('click', '.del_file', function () {
+                if ($(".file").length !== 1) {
+                    $(this).parent().parent().remove();
+                    $(".file").each(function (i) {
+                        $(this).find(".col-md-4").children().first().text("Файл " + (i + 1));
+                    });
+                }
+            });
+        });
+    </script>
 {% endblock %}
