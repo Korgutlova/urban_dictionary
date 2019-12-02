@@ -9,23 +9,35 @@
         Описание<textarea name="description" class="form-control"></textarea><br>
         Ссылка на первоисточник<input name="source" class="form-control" type="text"><br>
         Примеры:<br>
-        <div class="example">
-            Пример 1<textarea name="examples" class="form-control"></textarea>
-            <div class="form-check">
+        <div class="row example">
+            <div class="form-group col-md-7">
+                Пример 1<textarea name="examples" class="form-control"></textarea>
+            </div>
+            <div class="form-group col-md-2 form-check" style="margin-top: 50px">
                 <label class="form-check-label">
                     <input type="radio" class="form-check-input" name="primary" value="0">Основной
                 </label>
+            </div>
+            <div class="form-group col-md-3 " style="margin-top: 50px">
+                <p class="btn btn-danger del_example">Удалить пример</p>
             </div>
         </div>
         <br>
         <a id="add_example" class="btn btn-outline-secondary">Добавить еще пример</a>
         <br>
         Прикрепить файлы к статье
-        <div class="file">
-             Файл 1 <input class="form-control-file" type="file" name="upload_data">
-            <label> Подпись фотографии
-                <input name="header" class="form-control" type="text">
-            </label><br>
+        <div class="row file">
+            <div class="form-group col-md-4">
+                Файл 1 <input class="form-control-file" type="file" name="upload_data">
+            </div>
+            <div class="form-group col-md-5">
+                <label> Подпись к фотографии
+                    <input name="header" class="form-control" type="text">
+                </label>
+            </div>
+            <div class="form-group col-md-3" style="margin-top: 30px">
+                <p class="btn btn-danger del_file">Удалить файл</p>
+            </div>
         </div>
 
         <a id="add_file" class="btn btn-outline-secondary">Добавить еще файл</a>
@@ -38,24 +50,43 @@
         $(document).ready(function () {
             $("#add_example").click(function () {
                 var count = $(".example").length;
-                $(".example:last").after("<div class=\"example\">\n" +
-                    "            Пример " + (count + 1) + " <textarea name=\"examples\" class=\"form-control\"></textarea>\n" +
-                    "            <div class=\"form-check\">\n" +
+                $(".example:last").after("<div class=\"row example\">\n" +
+                    "            <div class=\"form-group col-md-7\">\n" +
+                    "                Пример " + (count + 1) + " <textarea name=\"examples\" class=\"form-control\"></textarea>\n" +
+                    "            </div>\n" +
+                    "            <div class=\"form-group col-md-2 form-check\" style=\"margin-top: 50px\">\n" +
                     "                <label class=\"form-check-label\">\n" +
                     "                    <input type=\"radio\" class=\"form-check-input\" name=\"primary\" value=\"" + count + "\">Основной\n" +
                     "                </label>\n" +
                     "            </div>\n" +
-                    "            <br>\n" +
+                    "            <div class=\"form-group col-md-3 \" style=\"margin-top: 50px\">\n" +
+                    "                <p class=\"btn btn-danger del_example\">Удалить пример</p>\n" +
+                    "            </div>\n" +
                     "        </div>");
             });
             $("#add_file").click(function () {
                 var count = $(".file").length + 1;
-                $(".file:last").after("<div class=\"file\">\n" +
-                    "             Файл " + count + "<input class=\"form-control-file\" type=\"file\" name=\"upload_data\">\n" +
-                    "            <label> Подпись фотографии\n" +
-                    "                <input name=\"header\" class=\"form-control\" type=\"text\">\n" +
-                    "            </label><br>\n" +
+                $(".file:last").after("<div class=\"row file\">\n" +
+                    "            <div class=\"form-group col-md-4\">\n" +
+                    "                Файл " + count + " <input class=\"form-control-file\" type=\"file\" name=\"upload_data\">\n" +
+                    "            </div>\n" +
+                    "            <div class=\"form-group col-md-5\">\n" +
+                    "                <label> Подпись к фотографии\n" +
+                    "                    <input name=\"header\" class=\"form-control\" type=\"text\">\n" +
+                    "                </label>\n" +
+                    "            </div>\n" +
+                    "            <div class=\"form-group col-md-3\" style=\"margin-top: 30px\">\n" +
+                    "                <p class=\"btn btn-danger del_file\">Удалить файл</p>\n" +
+                    "            </div>\n" +
                     "        </div>");
+            });
+            {# TO DO REMOVE (NOT FULL) #}
+            $('.container').on('click', '.del_example', function () {
+                $(this).parent().parent().remove();
+            });
+
+            $('.container').on('click', '.del_file', function () {
+                $(this).parent().parent().remove();
             });
         });
     </script>

@@ -74,6 +74,12 @@ class Definition(models.Model):
             return False
         return True
 
+    def get_cur_status(self):
+        reqs = self.requests.all()
+        if len(reqs) == 0:
+            return -1
+        return reqs.first().status
+
     @classmethod
     def get_top_for_week(cls):
         result = []

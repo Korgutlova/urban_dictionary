@@ -1,1 +1,13 @@
 {% extends 'website/base/base_page.html' %}
+{% block title %}
+    Редактирование определения
+{% endblock %}
+{% block content %}
+    <h3>Реализация появится позже, сссори</h3>
+    {% if rfp %}
+        Причина отклонения определения:
+        <div>
+            <p>{{ rfp.reason }}</p>
+        </div>
+    {% endif %}
+{% endblock %}
