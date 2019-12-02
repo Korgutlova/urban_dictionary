@@ -1,20 +1,70 @@
 {% extends 'website/base/base_page.html' %}
+{% load static %}
 {% block title %}Регистрация{% endblock %}
+{% block links %}
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
+            integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"
+            crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"
+            integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1"
+            crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"
+            integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM"
+            crossorigin="anonymous"></script>
+
+{% endblock %}
 {% block content %}
-    <h1>Регистрация</h1>
-    <form method="post" action="">
-    {% csrf_token %}
-        <dl class="register">
-            {% for field in form %}
-                <dt>{{ field.label_tag }}</dt>
-                <dd class="clearfix">{{ field }}
-                    {% if field.help_text %}
-                        <div class="clearfix">{{ field.help_text }}</div>{% endif %}
-                    {% if field.errors %}
-                        <div class="myerrors clearfix">{{ field.errors }}</div>{% endif %}
-                </dd>
-            {% endfor %}
-        </dl>
-        <input type="submit" value="Зарегистрироваться" class="clearfix">
-    </form>
+    <div class="container">
+        <div class="row">
+            <div class="col-sm-9 col-md-7 col-lg-6 mx-auto">
+                <div class="card card-signin">
+                    <div class="card-body">
+                        <h5 class="card-title text-center">Регистрация</h5>
+                        <form method="post" action="">
+                            {% csrf_token %}
+                            <div class="register">
+
+                                <div class="regfield">
+                                    <div>{{ form.username.label_tag }}</div>
+                                    <input type="text" name="{{ form.username.name }}" required
+                                           id="{{ form.username.id_for_label }}"/>
+                                <div class="reghint">{{ form.username.help_text }}</div>
+                                    {% if form.username.errors %}
+                                        <div class="myerrors clearfix">{{ form.username.errors }}</div>{% endif %}
+                                </div>
+
+                                <div class="regfield">
+                                    <div>{{ form.email.label_tag }}</div>
+                                    <input type="email" name="{{ form.email.name }}" required
+                                           id="{{ form.email.id_for_label }}"/>
+                                    {% if form.email.errors %}
+                                        <div class="myerrors clearfix">{{ form.email.errors }}</div>{% endif %}
+                                </div>
+
+                                <div class="regfield">
+                                    <div>{{ form.password1.label_tag }}</div>
+                                    <input type="password" name="{{ form.password1.name }}" required
+                                           id="{{ form.password1.id_for_label }}"/>
+                                <div class="reghint">{{ form.password1.help_text }}</div>
+                                    {% if form.password1.errors %}
+                                        <div class="myerrors clearfix">{{ form.password1.errors }}</div>{% endif %}
+                                </div>
+
+                                <div class="regfield">
+                                    <div>{{ form.password2.label_tag }}</div>
+                                    <input type="password" name="{{ form.password2.name }}" required
+                                           id="{{ form.password2.id_for_label }}"/>
+                                <div class="reghint">{{ form.password2.help_text }}</div>
+                                    {% if form.password2.errors %}
+                                        <div class="myerrors clearfix">{{ form.password2.errors }}</div>{% endif %}
+                                </div>
+                            </div>
+                            <input type="submit" value="Зарегистрироваться"
+                                   class="clearfix btn btn-lg btn-primary btn-block" style="margin-top: 15px">
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 {% endblock %}

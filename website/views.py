@@ -8,7 +8,7 @@ from django.core.files.storage import FileSystemStorage
 from django.db import transaction
 from django.db.models import Q
 from django.http import HttpResponse
-from django.shortcuts import render, redirect, get_object_or_404
+from django.shortcuts import render, redirect, get_object_or_404, render_to_response
 from django.views.decorators.http import require_POST
 
 from website.enums import STATUSES_FOR_REQUESTS
@@ -25,13 +25,19 @@ from website.models import Definition, Term, CustomUser, Example, UploadData, Ra
 from django.views import View
 from django.views.generic import ListView, DetailView
 
-from website.models import Term, STATUSES
+from website.models import Term, STATUSES, ROLE_CHOICES
 
 
 def main_page(request):
     return render(request, 'website/main_page.html',
                   {'definitions': Definition.get_top_for_week})
     # {'definitions': Definition.objects.all})
+
+
+def custom_handler404(request, exception):
+    response = render_to_response("website/base/page_not_found.html")
+    response.status_code = 404
+    return response
 
 
 @login_required
@@ -55,9 +61,10 @@ def update_profile(request):
     else:
         user_form = EditUserForm(instance=request.user)
         profile_form = EditProfileForm(instance=request.user.custom_user)
-    return render(request, 'edit_profile.html', {
+    return render(request, 'website/edit_profile.html', {
         'user_form': user_form,
-        'profile_form': profile_form
+        'profile_form': profile_form,
+        'role': ROLE_CHOICES[request.user.custom_user.role - 1][1]
     })
 
 

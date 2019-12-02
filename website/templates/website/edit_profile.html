@@ -1,0 +1,137 @@
+{% extends 'website/base/base_page.html' %}
+{% load static %}
+{% block links %}
+
+{% endblock %}
+{% block script %}
+    <script src="{% static 'js/image_preview.js' %}"></script>
+{% endblock %}
+{% block title %}Редактирование профиля{% endblock %}
+{% block content %}
+    <div class="card">
+        <div class="card-body">
+            <div class="e-profile">
+                <form class="form" method="post" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    <div class="row">
+                        <div class="col-12 col-sm-auto mb-3">
+                            <div class="mx-auto" style="width: 140px;">
+                                <img alt="" id="{{ profile_form.photo.id_for_label }}_preview"
+                                     class="profile_thumbnail"
+                                     src="{% if profile_form.photo.url %} {{ profile_form.photo.url }} {% else %}/media/default.jpg{% endif %}">
+                            </div>
+                        </div>
+                        <div class="col d-flex flex-column flex-sm-row justify-content-between mb-3">
+                            <div class="text-center text-sm-left mb-2 mb-sm-0">
+                                <h4 class="pt-sm-2 pb-1 mb-0 text-nowrap">{{ user.first_name }} {{ user.last_name }}</h4>
+                                <p class="mb-0">{{ user.username }}</p>
+                                <div class="text-muted">
+                                    <small>{{ user.email }} {{ profile_form.photo.url }}</small>
+                                </div>
+                                <div class="mt-2">
+                                    <div class="upload-btn-wrapper">
+                                        <label for="{{ profile_form.photo.id_for_label }}"
+                                               id="change_photo" class="btn btn-primary custom-file-upload">
+                                            <i class="fa fa-fw fa-camera"></i>
+                                            Сменить фото
+                                        </label>
+                                        <input type="file" accept="image/*"
+                                               class="custom-file-container__custom-file__custom-file-input"
+                                               name="{{ profile_form.photo.name }}"
+                                               id="{{ profile_form.photo.id_for_label }}">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="text-center text-sm-right">
+                                <span class="badge badge-secondary">{{ role }}</span>
+                                <div class="text-muted">
+                                    <small>Дата регистрации: {{ user.date_joined }}</small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="tab-content pt-3">
+                        <div class="tab-pane active">
+                            <div class="row">
+                                <div class="col">
+                                    <div class="row">
+                                        <div class="col">
+                                            <div class="form-group">
+                                                <label>Имя</label>
+                                                <input class="form-control" type="text"
+                                                       name="{{ user_form.first_name.name }}"
+                                                       id="{{ user_form.first_name.id_for_label }}"
+                                                       value="{{ user_form.first_name.value }}">
+                                            </div>
+                                        </div>
+                                        <div class="col">
+                                            <div class="form-group">
+                                                <label>Фамилия</label>
+                                                <input class="form-control" type="text"
+                                                       name="{{ user_form.last_name.name }}"
+                                                       id="{{ user_form.last_name.id_for_label }}"
+                                                       value="{{ user_form.last_name.value }}">
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col mb-3">
+                                            <div class="form-group">
+                                                <label>О себе</label>
+                                                <textarea class="form-control" rows="5"
+                                                          name="{{ profile_form.description.name }}"
+                                                          id="{{ profile_form.description.id_for_label }}">{{ profile_form.description.value }}</textarea>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-12 col-sm-6 mb-3">
+                                    <div class="mb-2"><b>Сменить пароль</b></div>
+                                    <div class="row">
+                                        <div class="col">
+                                            <div class="form-group">
+                                                <label>Текущий пароль</label>
+                                                <input class="form-control" type="password">
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col">
+                                            <div class="form-group">
+                                                <label>Новый пароль</label>
+                                                <input class="form-control" type="password">
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col">
+                                            <div class="form-group">
+                                                <label>Подтвердите <span
+                                                        class="d-none d-xl-inline">новый пароль</span></label>
+                                                <input class="form-control" type="password"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-12 col-sm-5 offset-sm-1 mb-3">
+                                    <div class="mb-2"><b>Действия с аккаунтом</b></div>
+                                    <div class="row">
+                                        <div class="col">
+                                            <a href="#" class="btn btn-danger" role="button">Удалить аккаунт</a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col d-flex justify-content-end">
+                                    <button class="btn btn-primary" type="submit">Сохранить</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+{% endblock %}

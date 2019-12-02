@@ -29,7 +29,7 @@ body {
 }
 
 .favorites {
-    color: rgba(255,0,0,0.5);
+    color: rgba(255, 0, 0, 0.5);
     font-size: 40px;
 }
 
@@ -43,9 +43,48 @@ body {
 }
 
 .favoritesadded:hover {
-    color: rgba(255,0,0,0.5);
+    color: rgba(255, 0, 0, 0.5);
 }
 
-.jumbotron{
+.jumbotron {
     padding: 0.5rem 0.7rem;
+}
+
+.regfield {
+    margin-bottom: 20px;
+    margin-top: 20px;
+}
+
+.myerrors {
+    color: red;
+}
+
+.reghint {
+    font-style: italic;
+    margin-bottom: 10px;
+    margin-top: 10px;
+}
+
+.reghint > ul {
+    padding-inline-start: 20px;
+    margin-bottom: 5px;
+}
+
+.myerrors > ul {
+    list-style-type: none;
+}
+
+img.profile_thumbnail {
+    display: block;
+    max-width: 140px;
+    height: 140px;
+}
+
+.upload-btn-wrapper input[type="file"] {
+    display: none;
+}
+.custom-file-upload {
+    display: inline-block;
+    cursor: pointer;
+    padding: 6px 12px;
 }

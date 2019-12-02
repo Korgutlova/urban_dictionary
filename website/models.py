@@ -18,7 +18,7 @@ class CustomUser(models.Model):
     status = models.IntegerField(choices=STATUSES, blank=False, null=False, default=STATUSES[2][0],
                                  verbose_name="Статус")
 
-    # link_photo
+    photo = models.ImageField(upload_to='profile_pics', default='default.jpg')
 
     def __str__(self):
         return self.user.username
