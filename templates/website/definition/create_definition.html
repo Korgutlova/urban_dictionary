@@ -11,7 +11,8 @@
         Примеры:<br>
         <div class="row example">
             <div class="form-group col-md-7">
-                Пример 1<textarea name="examples" class="form-control"></textarea>
+                <label>Пример 1</label>
+                <textarea name="examples" class="form-control"></textarea>
             </div>
             <div class="form-group col-md-2 form-check" style="margin-top: 50px">
                 <label class="form-check-label">
@@ -28,7 +29,7 @@
         Прикрепить файлы к статье
         <div class="row file">
             <div class="form-group col-md-4">
-                Файл 1 <input class="form-control-file" type="file" name="upload_data">
+                <label>Файл 1 </label><input class="form-control-file" type="file" name="upload_data">
             </div>
             <div class="form-group col-md-5">
                 <label> Подпись к фотографии
@@ -52,7 +53,7 @@
                 var count = $(".example").length;
                 $(".example:last").after("<div class=\"row example\">\n" +
                     "            <div class=\"form-group col-md-7\">\n" +
-                    "                Пример " + (count + 1) + " <textarea name=\"examples\" class=\"form-control\"></textarea>\n" +
+                    "                <label>Пример " + (count + 1) + " </label><textarea name=\"examples\" class=\"form-control\"></textarea>\n" +
                     "            </div>\n" +
                     "            <div class=\"form-group col-md-2 form-check\" style=\"margin-top: 50px\">\n" +
                     "                <label class=\"form-check-label\">\n" +
@@ -68,7 +69,7 @@
                 var count = $(".file").length + 1;
                 $(".file:last").after("<div class=\"row file\">\n" +
                     "            <div class=\"form-group col-md-4\">\n" +
-                    "                Файл " + count + " <input class=\"form-control-file\" type=\"file\" name=\"upload_data\">\n" +
+                    "                <label>Файл " + count + "</label><input class=\"form-control-file\" type=\"file\" name=\"upload_data\">\n" +
                     "            </div>\n" +
                     "            <div class=\"form-group col-md-5\">\n" +
                     "                <label> Подпись к фотографии\n" +
@@ -80,13 +81,23 @@
                     "            </div>\n" +
                     "        </div>");
             });
-            {# TO DO REMOVE (NOT FULL) #}
             $('.container').on('click', '.del_example', function () {
-                $(this).parent().parent().remove();
+                if ($(".example").length !== 1) {
+                    $(this).parent().parent().remove();
+                    $(".example").each(function (i) {
+                        $(this).find(".form-check").children().children().val(i);
+                        $(this).find(".col-md-7").children().first().text("Пример " + (i + 1));
+                    });
+                }
             });
 
             $('.container').on('click', '.del_file', function () {
-                $(this).parent().parent().remove();
+                if ($(".file").length !== 1) {
+                    $(this).parent().parent().remove();
+                    $(".file").each(function (i) {
+                        $(this).find(".col-md-4").children().first().text("Файл " + (i + 1));
+                    });
+                }
             });
         });
     </script>
