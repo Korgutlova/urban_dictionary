@@ -6,6 +6,7 @@ app_name = "website"
 urlpatterns = [
     path(r'', main_page, name="main_page"),
     path(r'edit_profile/', update_profile, name='update_profile'),
+    path(r'change_password/', change_password, name="change_password"),
     path(r'create_definition/', create_definition, name='create_definition'),
     path(r'term/<int:pk>',  TermView.as_view(), name='term'),
     path(r'activate_user/', activate_user, name='activate_user'),

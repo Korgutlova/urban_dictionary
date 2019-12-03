@@ -80,11 +80,19 @@ img.profile_thumbnail {
     height: 140px;
 }
 
-.upload-btn-wrapper input[type="file"] {
-    display: none;
+.error-text {
+    color: red;
 }
+
 .custom-file-upload {
-    display: inline-block;
+    width: 0.1px;
+	height: 0.1px;
+	opacity: 0;
+	overflow: hidden;
+	position: absolute;
+	z-index: -1;
+}
+
+.custom-file-upload-btn {
     cursor: pointer;
-    padding: 6px 12px;
 }

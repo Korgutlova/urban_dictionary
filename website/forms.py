@@ -12,4 +12,4 @@ class EditUserForm(forms.ModelForm):
 class EditProfileForm(forms.ModelForm):
     class Meta:
         model = CustomUser
-        fields = ('photo', 'description')
+        fields = ('description', 'photo')

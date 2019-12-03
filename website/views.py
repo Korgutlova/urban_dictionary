@@ -3,7 +3,9 @@ import random
 import time
 
 from django import template
+from django.contrib.auth import update_session_auth_hash
 from django.contrib.auth.decorators import login_required
+from django.contrib.auth.forms import PasswordChangeForm
 from django.core.files.storage import FileSystemStorage
 from django.db import transaction
 from django.db.models import Q
@@ -49,8 +51,22 @@ def activate_user(request):
 
 
 @login_required
+@require_POST
+def change_password(request):
+    password_form = PasswordChangeForm(user=request.user, data=request.POST)
+    if password_form.is_valid():
+        password_form.save()
+        update_session_auth_hash(request, password_form.user)
+        return redirect('website:main_page')
+    else:
+        request.session['change_password_msg'] = password_form.errors
+        return redirect('website:update_profile')
+
+
+@login_required
 @transaction.atomic
 def update_profile(request):
+    password_form = PasswordChangeForm(user=request.user)
     if request.method == 'POST':
         user_form = EditUserForm(request.POST, instance=request.user)
         profile_form = EditProfileForm(request.POST, instance=request.user.custom_user)
@@ -61,9 +77,11 @@ def update_profile(request):
     else:
         user_form = EditUserForm(instance=request.user)
         profile_form = EditProfileForm(instance=request.user.custom_user)
+        password_form._errors = request.session.pop('change_password_msg', None)
     return render(request, 'website/edit_profile.html', {
         'user_form': user_form,
         'profile_form': profile_form,
+        'password_form': password_form,
         'role': ROLE_CHOICES[request.user.custom_user.role - 1][1]
     })
 
