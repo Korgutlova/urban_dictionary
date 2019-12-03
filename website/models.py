@@ -130,7 +130,7 @@ class RequestForPublication(models.Model):
     status = models.IntegerField(choices=STATUSES_FOR_REQUESTS, blank=False, null=False,
                                  default=STATUSES_FOR_REQUESTS[0][0],
                                  verbose_name="Статус публикации")
-    reason = models.TextField(verbose_name="Причина отклонения", blank=False)
+    reason = models.TextField(verbose_name="Причина отклонения", blank=False, null=False)
 
     old_request = models.ForeignKey("self", blank=True, null=True, verbose_name="Старый запрос на публикацию",
                                     on_delete=models.SET_NULL)

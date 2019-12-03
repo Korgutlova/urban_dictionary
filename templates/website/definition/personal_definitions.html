@@ -9,30 +9,34 @@
             <div class="row">
                 <div class="col-md-5">
                     <a href={% url 'website:term' definition.term.id %}><h3>{{ definition.term.name }}</h3></a>
-                    <p>Статус статьи - {% if definition.is_publish %}
-                        <i style="color: green">Опубликовано</i>
-                    {% else %}
-                        {% if  definition.get_cur_status == 1 %}
-                            <i style="color: #0a1cff">На рассмотрении </i>
-                        {% elif definition.get_cur_status == 2 %}
-                            <i style="color: #ff8820">Отклонен </i>
-                            <a href="{%  url "website:edit_definition" definition.id %}">Исправить</a>
-                        {% elif definition.get_cur_status == 4 %}
-                            <i style="color: #ff1118">Отклонен навсегда </i>
-                        {% endif %}
-                    {% endif %}</p>
+                    {% if user.custom_user == definition.author %}
+                        <p>Статус статьи - {% if definition.is_publish %}
+                            <i style="color: green">Опубликовано</i>
+                        {% else %}
+                            {% if  definition.get_cur_status == 1 %}
+                                <i style="color: #0a1cff">На рассмотрении </i>
+                            {% elif definition.get_cur_status == 2 %}
+                                <i style="color: #ff8820">Отклонен </i>
+                                <a href="{% url "website:edit_definition" definition.id %}">Исправить</a>
+                            {% elif definition.get_cur_status == 4 %}
+                                <i style="color: #ff1118">Отклонен навсегда </i>
+                            {% endif %}
+                        {% endif %}</p>
+                    {% endif %}
                 </div>
                 <div class="col-md-6">
                     <h5>Автор статьи
                         - {{ definition.author.user.last_name }} {{ definition.author.user.first_name }}</h5>
-                    <p><i>Дата публикации- {{ definition.date }}</i></p>
+                    {% if definition.is_publish %}
+                        <p><i>Дата публикации - {{ definition.date }}</i></p>
+                    {% endif %}
                 </div>
                 <div class="col-md-1">
                     <a href="#" id="favorites" data-toggle="tooltip" data-placement="bottom"
                        title="Добавить в избранное"><i class=" fa fa-heart"></i></a>
                 </div>
             </div>
-
+            <h3>Описание</h3>
             <p>{{ definition.description }}</p>
             <h3>Примеры</h3>
             <div class="jumbotron">
