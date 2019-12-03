@@ -18,13 +18,13 @@
                             <div class="mx-auto" style="width: 140px;">
                                 <img alt="" id="{{ profile_form.photo.id_for_label }}_preview"
                                      class="profile_thumbnail"
-                                     src="{% if profile_form.photo.url %} {{ profile_form.photo.url }} {% else %}/media/default.jpg{% endif %}">
+                                     src="{% if profile_form.photo.url %} {{ profile_form.photo.url }} {% else %}/media/profile_pics/default.jpg{% endif %}">
                             </div>
                         </div>
                         <div class="col d-flex flex-column flex-sm-row justify-content-between mb-3">
                             <div class="text-center text-sm-left mb-2 mb-sm-0">
                                 <h4 class="pt-sm-2 pb-1 mb-0 text-nowrap">{{ user.first_name }} {{ user.last_name }}</h4>
-                                <p class="mb-0">{{ user.username }}</p>
+                                <p class="mb-0">{{ user.username }} {{ profile_form.photo.size }}</p>
                                 <div class="text-muted">
                                     <small>{{ user.email }} {{ profile_form.photo.url }}</small>
                                 </div>
