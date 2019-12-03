@@ -72,7 +72,9 @@ def update_profile(request):
         profile_form = EditProfileForm(request.POST, instance=request.user.custom_user)
         if user_form.is_valid() and profile_form.is_valid():
             user_form.save()
-            profile_form.save()
+            user = profile_form.save(commit=False)
+            user.photo = request.FILES['photo']
+            user.save()
             return redirect('website:main_page')
     else:
         user_form = EditUserForm(instance=request.user)
