@@ -41,35 +41,37 @@
                         {% if definition.date %}<p><i>Дата публикации - {{ definition.date }}</i></p>{% endif %}
                     {% endif %}
                 </div>
-                <div class="col-md-1">
-                    <p class="{% is_favoured definition user %}" id="favorite{{ definition.pk }}"
-                       name="{{ definition.pk }}" data-toggle="tooltip" data-placement="bottom"
-                       title="Добавить в избранное"><i class=" fa fa-heart"></i></p>
-                </div>
-                <script>
-                    $('#favorite{{ definition.pk }}').click(function () {
-                        $.ajax({
-                            type: "POST",
-                            url: "{% url 'website:favourite' %}",
-                            data: {'def_id': $(this).attr('name'), 'csrfmiddlewaretoken': '{{ csrf_token }}'},
-                            dataType: "json",
-                            success: function (response) {
-                                if (response.colour === 'black') {
-                                    $('#favorite{{ definition.pk }}').removeClass("favoritesadded").addClass("favorites");
-                                } else {
-                                    $('#favorite{{ definition.pk }}').removeClass("favorites").addClass("favoritesadded");
+                {% if definition.is_publish %}
+                    <div class="col-md-1">
+                        <p class="{% is_favoured definition user %}" id="favorite{{ definition.pk }}"
+                           name="{{ definition.pk }}" data-toggle="tooltip" data-placement="bottom"
+                           title="Добавить в избранное"><i class=" fa fa-heart"></i></p>
+                    </div>
+                    <script>
+                        $('#favorite{{ definition.pk }}').click(function () {
+                            $.ajax({
+                                type: "POST",
+                                url: "{% url 'website:favourite' %}",
+                                data: {'def_id': $(this).attr('name'), 'csrfmiddlewaretoken': '{{ csrf_token }}'},
+                                dataType: "json",
+                                success: function (response) {
+                                    if (response.colour === 'black') {
+                                        $('#favorite{{ definition.pk }}').removeClass("favoritesadded").addClass("favorites");
+                                    } else {
+                                        $('#favorite{{ definition.pk }}').removeClass("favorites").addClass("favoritesadded");
+                                    }
+                                },
+                                fail: function (response) {
+                                    alert(response.responseText)
+                                },
+                                error: function (rs, e) {
+                                    debugger
+                                    alert(rs.responseText);
                                 }
-                            },
-                            fail: function (response) {
-                                alert(response.responseText)
-                            },
-                            error: function (rs, e) {
-                                debugger
-                                alert(rs.responseText);
-                            }
-                        });
-                    })
-                </script>
+                            });
+                        })
+                    </script>
+                {% endif %}
             </div>
             <h3>Описание</h3>
             <a href="{% url "website:definition" definition.id %}" style="text-decoration: none">
@@ -82,46 +84,48 @@
                 <p>{{ definition.get_primary_example }}</p>
             </div>
             <hr>
-            <button id="like{{ definition.pk }}" name="{{ definition.pk }}" class="btn btn-success"><i
-                    class="fa fa-thumbs-up">&nbsp{{ definition.get_likes }}</i></button>
-            <button id="dislike{{ definition.pk }}" name="{{ definition.pk }}" class="btn btn-danger"><i
-                    class="fa fa-thumbs-up">&nbsp{{ definition.get_dislikes }}</i></button>
-            <br>
-            <br>
-            <script>
-                $('#like{{ definition.pk }}').click(function () {
-                    $.ajax({
-                        type: "POST",
-                        url: "{% url 'website:like' %}",
-                        data: {'def_id': $(this).attr('name'), 'csrfmiddlewaretoken': '{{ csrf_token }}'},
-                        dataType: "json",
-                        success: function (response) {
-                            $('#like{{ definition.pk }}').html("<i class=\"fa fa-thumbs-up\">&nbsp" + response.likes_count + "</i>");
-                            $('#dislike{{ definition.pk }}').html("<i class=\"fa fa-thumbs-up\">&nbsp" + response.dislikes_count + "</i>");
-                        },
-                        error: function (rs, e) {
-                            alert(rs.responseText);
-                        }
-                    });
-                })
-            </script>
-            <script>
-                $('#dislike{{ definition.pk }}').click(function () {
-                    $.ajax({
-                        type: "POST",
-                        url: "{% url 'website:dislike' %}",
-                        data: {'def_id': $(this).attr('name'), 'csrfmiddlewaretoken': '{{ csrf_token }}'},
-                        dataType: "json",
-                        success: function (response) {
-                            $('#like{{ definition.pk }}').html("<i class=\"fa fa-thumbs-up\">&nbsp" + response.likes_count + "</i>");
-                            $('#dislike{{ definition.pk }}').html("<i class=\"fa fa-thumbs-up\">&nbsp" + response.dislikes_count + "</i>");
-                        },
-                        error: function (rs, e) {
-                            alert(rs.responseText);
-                        }
-                    });
-                })
-            </script>
+            {% if definition.is_publish %}
+                <button id="like{{ definition.pk }}" name="{{ definition.pk }}" class="btn btn-success"><i
+                        class="fa fa-thumbs-up">&nbsp{{ definition.get_likes }}</i></button>
+                <button id="dislike{{ definition.pk }}" name="{{ definition.pk }}" class="btn btn-danger"><i
+                        class="fa fa-thumbs-down">&nbsp{{ definition.get_dislikes }}</i></button>
+                <br>
+                <br>
+                <script>
+                    $('#like{{ definition.pk }}').click(function () {
+                        $.ajax({
+                            type: "POST",
+                            url: "{% url 'website:like' %}",
+                            data: {'def_id': $(this).attr('name'), 'csrfmiddlewaretoken': '{{ csrf_token }}'},
+                            dataType: "json",
+                            success: function (response) {
+                                $('#like{{ definition.pk }}').html("<i class=\"fa fa-thumbs-up\">&nbsp" + response.likes_count + "</i>");
+                                $('#dislike{{ definition.pk }}').html("<i class=\"fa fa-thumbs-down\">&nbsp" + response.dislikes_count + "</i>");
+                            },
+                            error: function (rs, e) {
+                                alert(rs.responseText);
+                            }
+                        });
+                    })
+                </script>
+                <script>
+                    $('#dislike{{ definition.pk }}').click(function () {
+                        $.ajax({
+                            type: "POST",
+                            url: "{% url 'website:dislike' %}",
+                            data: {'def_id': $(this).attr('name'), 'csrfmiddlewaretoken': '{{ csrf_token }}'},
+                            dataType: "json",
+                            success: function (response) {
+                                $('#like{{ definition.pk }}').html("<i class=\"fa fa-thumbs-up\">&nbsp" + response.likes_count + "</i>");
+                                $('#dislike{{ definition.pk }}').html("<i class=\"fa fa-thumbs-down\">&nbsp" + response.dislikes_count + "</i>");
+                            },
+                            error: function (rs, e) {
+                                alert(rs.responseText);
+                            }
+                        });
+                    })
+                </script>
+            {% endif %}
         </div>
     {% endfor %}
 {% endblock %}

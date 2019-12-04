@@ -19,11 +19,13 @@
                         {% if definition.date %}<p><i>Дата публикации - {{ definition.date }}</i></p>{% endif %}
                     {% endif %}
                 </div>
-                <div class="col-md-1">
-                    <p class="{% is_favoured definition user %}" id="favorite{{ definition.pk }}"
-                       name="{{ definition.pk }}" data-toggle="tooltip" data-placement="bottom"
-                       title="Добавить в избранное"><i class=" fa fa-heart"></i></p>
-                </div>
+                {% if user.is_authenticated %}
+                    <div class="col-md-1">
+                        <p class="{% is_favoured definition user %}" id="favorite{{ definition.pk }}"
+                           name="{{ definition.pk }}" data-toggle="tooltip" data-placement="bottom"
+                           title="Добавить в избранное"><i class=" fa fa-heart"></i></p>
+                    </div>
+                {% endif %}
                 <script>
                     $('#favorite{{ definition.pk }}').click(function () {
                         $.ajax({
@@ -63,7 +65,7 @@
             <button id="like{{ definition.pk }}" name="{{ definition.pk }}" class="btn btn-success"><i
                     class="fa fa-thumbs-up">&nbsp{{ definition.get_likes }}</i></button>
             <button id="dislike{{ definition.pk }}" name="{{ definition.pk }}" class="btn btn-danger"><i
-                    class="fa fa-thumbs-up">&nbsp{{ definition.get_dislikes }}</i></button>
+                    class="fa fa-thumbs-down">&nbsp{{ definition.get_dislikes }}</i></button>
             <br>
             <br>
             <script>
@@ -75,7 +77,7 @@
                         dataType: "json",
                         success: function (response) {
                             $('#like{{ definition.pk }}').html("<i class=\"fa fa-thumbs-up\">&nbsp" + response.likes_count + "</i>");
-                            $('#dislike{{ definition.pk }}').html("<i class=\"fa fa-thumbs-up\">&nbsp" + response.dislikes_count + "</i>");
+                            $('#dislike{{ definition.pk }}').html("<i class=\"fa fa-thumbs-down\">&nbsp" + response.dislikes_count + "</i>");
                         },
                         error: function (rs, e) {
                             alert(rs.responseText);
@@ -92,7 +94,7 @@
                         dataType: "json",
                         success: function (response) {
                             $('#like{{ definition.pk }}').html("<i class=\"fa fa-thumbs-up\">&nbsp" + response.likes_count + "</i>");
-                            $('#dislike{{ definition.pk }}').html("<i class=\"fa fa-thumbs-up\">&nbsp" + response.dislikes_count + "</i>");
+                            $('#dislike{{ definition.pk }}').html("<i class=\"fa fa-thumbs-down\">&nbsp" + response.dislikes_count + "</i>");
                         },
                         error: function (rs, e) {
                             alert(rs.responseText);
