@@ -9,20 +9,22 @@
         <div class="row">
             <div class="col-md-5">
                 <a href={% url 'website:term' definition.term.id %}><h3>{{ definition.term.name }}</h3></a>
-                <p>Статус статьи - {% if definition.is_publish %}
-                    <i style="color: green">Опубликовано</i>
-                {% else %}
-                    {% if  definition.get_cur_status == 1 %}
-                        <i style="color: #0a1cff">На рассмотрении </i>
-                    {% elif definition.get_cur_status == 2 %}
-                        <i style="color: #ff8820">Отклонен </i>
-                        <br><br>
-                        <a href="{% url "website:edit_definition" definition.id %}"
-                           class="btn btn-light" style="background: #f9870b; color: white">Исправить</a>
-                    {% elif definition.get_cur_status == 4 %}
-                        <i style="color: #ff1118">Отклонен навсегда </i>
-                    {% endif %}
-                {% endif %}</p>
+                {% if user.is_authenticated and definition.author == user.custom_user %}
+                    <p>Статус статьи - {% if definition.is_publish %}
+                        <i style="color: green">Опубликовано</i>
+                    {% else %}
+                        {% if  definition.get_cur_status == 1 %}
+                            <i style="color: #0a1cff">На рассмотрении </i>
+                        {% elif definition.get_cur_status == 2 %}
+                            <i style="color: #ff8820">Отклонен </i>
+                            <br><br>
+                            <a href="{% url "website:edit_definition" definition.id %}"
+                               class="btn btn-light" style="background: #f9870b; color: white">Исправить</a>
+                        {% elif definition.get_cur_status == 4 %}
+                            <i style="color: #ff1118">Отклонен навсегда </i>
+                        {% endif %}
+                    {% endif %}</p>
+                {% endif %}
             </div>
             <div class="col-md-6">
                 <h5>Автор статьи - {{ definition.author.user.last_name }} {{ definition.author.user.first_name }}</h5>
@@ -30,28 +32,31 @@
                     <p><i>Дата публикации - {{ definition.date }}</i></p>
                 {% endif %}
             </div>
-            <div class="col-md-1">
-                <p class="{% is_favoured definition user %}" id="favorite{{ definition.pk }}" name="{{ definition.pk }}" data-toggle="tooltip" data-placement="bottom"
-                    title="Добавить в избранное"><i class=" fa fa-heart"></i></p>
-            </div>
+            {% if user.is_authenticated %}
+                <div class="col-md-1">
+                    <p class="{% is_favoured definition user %}" id="favorite{{ definition.pk }}"
+                       name="{{ definition.pk }}" data-toggle="tooltip" data-placement="bottom"
+                       title="Добавить в избранное"><i class=" fa fa-heart"></i></p>
+                </div>
+            {% endif %}
             <script>
-                $('#favorite{{ definition.pk }}').click(function(){
+                $('#favorite{{ definition.pk }}').click(function () {
                     $.ajax({
                         type: "POST",
                         url: "{% url 'website:favourite' %}",
                         data: {'def_id': $(this).attr('name'), 'csrfmiddlewaretoken': '{{ csrf_token }}'},
                         dataType: "json",
-                        success: function(response) {
+                        success: function (response) {
                             if (response.colour === 'black') {
                                 $('#favorite{{ definition.pk }}').removeClass("favoritesadded").addClass("favorites");
                             } else {
                                 $('#favorite{{ definition.pk }}').removeClass("favorites").addClass("favoritesadded");
                             }
                         },
-                        fail: function(response) {
+                        fail: function (response) {
                             alert(response.responseText)
                         },
-                        error: function(rs, e) {
+                        error: function (rs, e) {
                             debugger
                             alert(rs.responseText);
                         }
@@ -76,39 +81,41 @@
         <h4>Источник</h4>
         <a href="{{ definition.source }}">{{ definition.source }}</a>
         <hr>
-        <button id="like{{ definition.pk }}" name="{{ definition.pk }}" class="btn btn-success"><i class="fa fa-thumbs-up">&nbsp{{ definition.get_likes }}</i></button>
-        <button id="dislike{{ definition.pk }}" name="{{ definition.pk }}" class="btn btn-danger"><i class="fa fa-thumbs-up">&nbsp{{ definition.get_dislikes }}</i></button>
+        <button id="like{{ definition.pk }}" name="{{ definition.pk }}" class="btn btn-success"><i
+                class="fa fa-thumbs-up">&nbsp{{ definition.get_likes }}</i></button>
+        <button id="dislike{{ definition.pk }}" name="{{ definition.pk }}" class="btn btn-danger"><i
+                class="fa fa-thumbs-up">&nbsp{{ definition.get_dislikes }}</i></button>
         <br>
         <br>
         <script>
-            $('#like{{ definition.pk }}').click(function(){
+            $('#like{{ definition.pk }}').click(function () {
                 $.ajax({
                     type: "POST",
                     url: "{% url 'website:like' %}",
                     data: {'def_id': $(this).attr('name'), 'csrfmiddlewaretoken': '{{ csrf_token }}'},
                     dataType: "json",
-                    success: function(response) {
+                    success: function (response) {
                         $('#like{{ definition.pk }}').html("<i class=\"fa fa-thumbs-up\">&nbsp" + response.likes_count + "</i>");
                         $('#dislike{{ definition.pk }}').html("<i class=\"fa fa-thumbs-up\">&nbsp" + response.dislikes_count + "</i>");
                     },
-                    error: function(rs, e) {
+                    error: function (rs, e) {
                         alert(rs.responseText);
                     }
                 });
             })
         </script>
         <script>
-            $('#dislike{{ definition.pk }}').click(function(){
+            $('#dislike{{ definition.pk }}').click(function () {
                 $.ajax({
                     type: "POST",
                     url: "{% url 'website:dislike' %}",
                     data: {'def_id': $(this).attr('name'), 'csrfmiddlewaretoken': '{{ csrf_token }}'},
                     dataType: "json",
-                    success: function(response) {
+                    success: function (response) {
                         $('#like{{ definition.pk }}').html("<i class=\"fa fa-thumbs-up\">&nbsp" + response.likes_count + "</i>");
                         $('#dislike{{ definition.pk }}').html("<i class=\"fa fa-thumbs-up\">&nbsp" + response.dislikes_count + "</i>");
                     },
-                    error: function(rs, e) {
+                    error: function (rs, e) {
                         alert(rs.responseText);
                     }
                 });

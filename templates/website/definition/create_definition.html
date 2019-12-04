@@ -3,12 +3,15 @@
     Создание определения
 {% endblock %}
 {% block content %}
+    <br>
+    <h3>Создание определения</h3>
+    <hr>
     <form method="post" action="{% url 'website:create_definition' %}" enctype="multipart/form-data">
         {% csrf_token %}
-        Название<input type="text" name="name" class="form-control"><br>
-        Описание<textarea name="description" class="form-control"></textarea><br>
-        Ссылка на первоисточник<input name="source" class="form-control" type="text"><br>
-        Примеры:<br>
+        <strong>Название</strong><input type="text" name="name" class="form-control"><br>
+        <strong>Описание</strong><textarea name="description" class="form-control"></textarea><br>
+        <strong>Ссылка на источник</strong><input name="source" class="form-control" type="text"><br>
+        <h5>Примеры</h5>
         <div class="row example">
             <div class="form-group col-md-7">
                 <label>Пример 1</label>
@@ -26,7 +29,8 @@
         <br>
         <a id="add_example" class="btn btn-outline-secondary">Добавить еще пример</a>
         <br>
-        Прикрепить файлы к статье
+        <br>
+        <h5>Прикрепить файлы к статье</h5>
         <div class="row file">
             <div class="form-group col-md-4">
                 <label>Файл 1 </label><input class="form-control-file" type="file" name="upload_data">
@@ -43,7 +47,8 @@
 
         <a id="add_file" class="btn btn-outline-secondary">Добавить еще файл</a>
         <br><br>
-        <input class="btn btn-success" type="submit" value="Сохранить"/>
+        <div style="text-align: left;"><input style="font-size: 26px" class="btn btn-success" type="submit" value="Сохранить"/>
+        <br><br>
     </form>
 {% endblock %}
 {% block script %}
@@ -88,6 +93,7 @@
                         $(this).find(".form-check").children().children().val(i);
                         $(this).find(".col-md-7").children().first().text("Пример " + (i + 1));
                     });
+                    $(".example").first().find(".form-check").children().children().prop('checked', true);
                 }
             });
 
