@@ -86,13 +86,27 @@ img.profile_thumbnail {
 
 .custom-file-upload {
     width: 0.1px;
-	height: 0.1px;
-	opacity: 0;
-	overflow: hidden;
-	position: absolute;
-	z-index: -1;
+    height: 0.1px;
+    opacity: 0;
+    overflow: hidden;
+    position: absolute;
+    z-index: -1;
 }
 
 .custom-file-upload-btn {
     cursor: pointer;
+}
+
+.div-info {
+    margin-bottom: 15px;
+    padding: 4px 12px;
+    background-color: #e7f3fe;
+    border-left: 6px solid #2196F3;
+}
+
+.div-error {
+    margin-bottom: 15px;
+    padding: 4px 12px;
+    background-color: #fecfb7;
+    border-left: 6px solid #f34d55;
 }

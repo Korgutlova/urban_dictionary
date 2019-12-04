@@ -149,7 +149,8 @@ def edit_definition(request, pk):
             term.save()
         definition.term = term
         definition.description = request.POST["description"]
-        definition.source = request.POST["source"],
+        definition.source = request.POST["source"]
+        definition.date = None
         definition.save()
         if current_user.is_moderator() or current_user.is_admin():
             definition.date = time.time()
@@ -158,15 +159,30 @@ def edit_definition(request, pk):
             rfp.date_creation = datetime.datetime.now()
             rfp.status = STATUSES_FOR_REQUESTS[0][0]
             rfp.save()
+
+        old_examples = list(definition.examples.all())
         examples = request.POST.getlist("examples")
         primary = int(request.POST.get("primary"))
+        print(primary)
+        for i, ex in enumerate(examples):
+            cur_examples = Example.objects.filter(example=ex, definition=definition)
+            if len(cur_examples) > 0:
+                example = cur_examples[0]
+            else:
+                example = Example(example=ex, definition=definition)
+            if example in old_examples:
+                old_examples.remove(example)
+            if primary == i:
+                example.primary = True
+            else:
+                example.primary = False
+            example.save()
+
+        for ex in old_examples:
+            ex.delete()
+
         for file in definition.files.all():
             file.delete()
-        for example in definition.examples.all():
-            example.delete()
-        for i, ex in enumerate(examples):
-            example = Example(example=ex, primary=True if primary == i else False, definition=definition)
-            example.save()
         for f, h in zip(request.FILES.getlist("upload_data"), request.POST.getlist("header")):
             link_file = "%s/%s/%s.%s" % (
                 definition.author.id, definition.id, int(time.time() * 1000), f.name.split(".")[1])
@@ -208,7 +224,11 @@ def page_not_found(request):
 
 
 def definition(request, pk):
-    return render(request, "website/definition/definition.html", {"definition": Definition.objects.get(id=pk)})
+    try:
+        definition = Definition.objects.get(id=pk)
+        return render(request, "website/definition/definition.html", {"definition": definition})
+    except:
+        return redirect("website:page_not_found")
 
 
 def personal_definitions(request):

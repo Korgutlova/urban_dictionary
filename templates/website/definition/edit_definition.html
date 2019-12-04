@@ -4,19 +4,23 @@
 {% endblock %}
 {% block content %}
     {% if rfp %}
-        <h3>Редактирование определения {{ definiton.name }}</h3>
+        <br>
+        <h3>Редактирование определения "{{ definition.term }}" </h3>
+        <br>
         <h5>Причина отклонения определения</h5>
-        <div>
-            <p style="color:#ed0000;">{{ rfp.reason }}</p>
+        <div class="div-error">
+            <p>{{ rfp.reason }}</p>
         </div>
 
         <form method="post" action="{% url 'website:edit_definition' definition.id %}" enctype="multipart/form-data">
             {% csrf_token %}
-            Название<input type="text" name="name" class="form-control" value="{{ definition.term }}"><br>
-            Описание<textarea name="description" class="form-control">{{ definition.description }}</textarea><br>
-            Ссылка на первоисточник<input name="source" class="form-control" type="text"
-                                          value="{{ definition.source }}"><br>
-            <strong>Примеры:</strong><br>
+            <strong>Название</strong><input type="text" name="name" class="form-control"
+                                            value="{{ definition.term }}"><br>
+            <strong>Описание</strong><textarea name="description"
+                                               class="form-control">{{ definition.description }}</textarea><br>
+            <strong>Ссылка на источник</strong><input name="source" class="form-control" type="text"
+                                                      value="{{ definition.source }}"><br>
+            <h5>Примеры</h5>
             {% for example in definition.examples.all %}
                 <div class="row example">
                     <div class="form-group col-md-7">
@@ -26,7 +30,7 @@
                     <div class="form-group col-md-2 form-check" style="margin-top: 50px">
                         <label class="form-check-label">
                             <input type="radio" {% if example.primary %} checked {% endif %} class="form-check-input"
-                                   name="primary" value="0">Основной
+                                   name="primary" value="{{ forloop.counter0 }}">Основной
                         </label>
                     </div>
                     <div class="form-group col-md-3 " style="margin-top: 50px">
@@ -35,15 +39,18 @@
                 </div>
             {% endfor %}
             <br>
-            <a id="add_example" class="btn btn-outline-secondary">Добавить еще пример</a>
+            <a id="add_example" class="btn btn-outline-secondary">Добавить пример</a>
             <br>
-            <h5>Прикрепить файлы к статье</h5>
+            <br>
+            <h5 class="header_for_files">Прикрепить файлы к статье</h5>
             {% for file in definition.files.all %}
                 <div class="row file">
                     <div class="form-group col-md-4">
-                        <label>Файл {{ forloop.counter }} </label><input class="form-control-file" type="file"
-                                                                         name="upload_data"
-                                                                         value="{{ file.image.url }}">
+                        <label>Файл {{ forloop.counter }} </label>
+                        <img src="{{ file.image.url }}" style="max-width:70%; max-height:70%;">
+                        <br>
+                        <br>
+                        <input class="form-control-file" type="file" name="upload_data" value="{{ file.image.url}}">
                     </div>
                     <div class="form-group col-md-5">
                         <label> Подпись к фотографии
@@ -56,9 +63,10 @@
                 </div>
             {% endfor %}
 
-            <a id="add_file" class="btn btn-outline-secondary">Добавить еще файл</a>
+            <a id="add_file" class="btn btn-outline-secondary">Добавить файл</a>
             <br><br>
-            <input class="btn btn-success" type="submit" value="Сохранить"/>
+            <input style="font-size: 26px" class="btn btn-success" type="submit" value="Сохранить"/>
+            <br><br>
         </form>
     {% endif %}
 {% endblock %}
@@ -83,7 +91,11 @@
             });
             $("#add_file").click(function () {
                 var count = $(".file").length + 1;
-                $(".file:last").after("<div class=\"row file\">\n" +
+                var className = ".file:last";
+                if (count === 1) {
+                    className = ".header_for_files:last";
+                }
+                $(className).after("<div class=\"row file\">\n" +
                     "            <div class=\"form-group col-md-4\">\n" +
                     "                <label>Файл " + count + "</label><input class=\"form-control-file\" type=\"file\" name=\"upload_data\">\n" +
                     "            </div>\n" +
@@ -96,6 +108,7 @@
                     "                <p class=\"btn btn-danger del_file\">Удалить файл</p>\n" +
                     "            </div>\n" +
                     "        </div>");
+
             });
             $('.container').on('click', '.del_example', function () {
                 if ($(".example").length !== 1) {

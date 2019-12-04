@@ -4,11 +4,19 @@
 {% endblock %}
 {% block content %}
     <br><br>
-    {% for rfp in rfps %}
-        <div class="jumbotron">
-            <a href="{% url "website:request_for_definition" rfp.id %}">{{ forloop.counter }})
-                &nbsp {{ rfp.definition }}</a>
-        </div>
-    {% endfor %}
+    <h3>Запросы на публикацию определений</h3>
+    <hr>
+    {% if rfps %}
+        {% for rfp in rfps %}
+            <a href="{% url "website:request_for_definition" rfp.id %}" style="text-decoration: none">
+                <div class="jumbotron">
+                    {{ forloop.counter }})
+                    &nbsp {{ rfp.definition }}
+                </div>
+            </a>
+        {% endfor %}
+    {% else %}
+        <p>На данный момент заявок нет</p>
+    {% endif %}
     <br><br>
 {% endblock %}

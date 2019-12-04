@@ -12,17 +12,13 @@
             <div class="col-md-6">
                 <h5>Автор статьи
                     - {{ rfp.definition.author.user.last_name }} {{ rfp.definition.author.user.first_name }}</h5>
-                <p><i>Дата публикации- {{ rfp.definition.date }}</i></p>
-            </div>
-            <div class="col-md-1">
-                <a href="#" id="favorites" data-toggle="tooltip" data-placement="bottom"
-                   title="Добавить в избранное"><i class=" fa fa-heart"></i></a>
+                <p><i>Дата подачи запроса - {{ rfp.date_creation }}</i></p>
             </div>
         </div>
         <p>{{ rfp.definition.description }}</p>
         <h4>Примеры</h4>
-        {% for example in rfp.definition.examples.all %}
-            <div class="jumbotron">
+         {% for example in rfp.definition.examples.all %}
+            <div class="jumbotron" {% if example.primary %} style="background: #fabd94" {% endif %}>
                 <p>{{ forloop.counter }}) &nbsp {{ example.example }}</p>
             </div>
         {% endfor %}
@@ -34,7 +30,7 @@
         {% endfor %}
         <br>
     </div>
-
+    <hr>
     <form method="post" action="{% url 'website:request_for_definition' rfp.id %}">
         {% csrf_token %}
         <div class="form-check">
@@ -55,10 +51,12 @@
                 Отклонить навсегда</label>
         </div>
         <div class="comment_reason" style="display: none">
-            Причина отклонения <textarea name="reason" class="form-control"></textarea><br>
+            <strong>Причина отклонения</strong><textarea name="reason" class="form-control"></textarea><br>
         </div>
-        <input class="btn btn-success" type="submit" value="Отправить"/>
+        <br>
+        <input style="font-size: 26px" class="btn btn-success" type="submit" value="Отправить"/>
     </form>
+    <br>
 
 {% endblock %}
 {% block script %}

@@ -67,7 +67,7 @@ class Definition(models.Model):
         return self.estimates.filter(estimate=0).count()
 
     def get_primary_example(self):
-        return self.examples.get(primary=True).example
+        return self.examples.filter(primary=True)[0].example
 
     def is_publish(self):
         if self.date is None:
@@ -88,7 +88,8 @@ class Definition(models.Model):
             defs = Definition.objects.filter(date__day=day.day, date__month=day.month, date__year=day.year)
             x = {}
             for d in defs:
-                if d.get_dislikes() + d.get_likes() >= 10:
+                # TODO - temporary change
+                if d.get_dislikes() + d.get_likes() >= 5:
                     try:
                         x[d] = d.get_likes() / d.get_dislikes()
                     except ZeroDivisionError:
