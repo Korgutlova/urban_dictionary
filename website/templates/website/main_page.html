@@ -25,7 +25,6 @@
                             data: {'def_id': $(this).attr('name'), 'csrfmiddlewaretoken': '{{ csrf_token }}'},
                             dataType: "json",
                             success: function(response) {
-                                debugger
                                 if (response.colour === 'black') {
                                     $('#favorite{{ definition.pk }}').removeClass("favoritesadded").addClass("favorites");
                                 } else {
