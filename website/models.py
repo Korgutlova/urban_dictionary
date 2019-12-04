@@ -67,7 +67,7 @@ class Definition(models.Model):
         return self.estimates.filter(estimate=0).count()
 
     def get_primary_example(self):
-        return self.examples.filter(primary=True)[0].example
+        return self.examples.get(primary=True).example
 
     def is_publish(self):
         if self.date is None:
