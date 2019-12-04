@@ -60,9 +60,6 @@
                         <li class="nav-item horizontal">
                             <a class="nav-link" href="#">Поддержка</a>
                         </li>
-                        <li class="nav-item horizontal">
-                            <a class="nav-link" href="{% url 'website:update_profile' %}">Редактировать профиль</a>
-                        </li>
                     {% endif %}
                     <li class="nav-item horizontal">
                         <a class="nav-link" href="#">Уведомления</a>
@@ -73,7 +70,9 @@
                         </li>
                     {% endif %}
                     <li class="nav-item horizontal">
-                        <a class="nav-link" href="{% url 'logout' %}">Выйти</a>
+                        <a href="{% url 'website:profile' user.id %}">
+                            <img width="50px" src="{% static 'img/profile.png' %}" alt="Мой профиль">
+                        </a>
                     </li>
                 {% endif %}
             </ul>

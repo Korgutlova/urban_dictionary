@@ -22,4 +22,5 @@ urlpatterns = [
     path(r'favourites/', favourites, name='favourites_list'),
     path(r'search/', search, name='search'),
     path(r'requests/', requests_pub, name='requests_pub'),
+    path(r'profile/<int:pk>', UserDetailView.as_view(), name='profile')
 ]

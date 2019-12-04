@@ -12,6 +12,7 @@ from django.db.models import Q
 from django.http import HttpResponse
 from django.shortcuts import render, redirect, get_object_or_404, render_to_response
 from django.views.decorators.http import require_POST
+from django_registration.forms import User
 
 from website.enums import STATUSES_FOR_REQUESTS
 
@@ -57,7 +58,7 @@ def change_password(request):
     if password_form.is_valid():
         password_form.save()
         update_session_auth_hash(request, password_form.user)
-        return redirect('website:main_page')
+        return redirect('website:profile', pk=request.user.id)
     else:
         request.session['change_password_msg'] = password_form.errors
         return redirect('website:update_profile')
@@ -73,9 +74,9 @@ def update_profile(request):
         if user_form.is_valid() and profile_form.is_valid():
             user_form.save()
             user = profile_form.save(commit=False)
-            user.photo = request.FILES['photo']
+            user.photo = request.FILES.get('photo', user.photo)
             user.save()
-            return redirect('website:main_page')
+            return redirect('website:profile', pk=user.id)
     else:
         user_form = EditUserForm(instance=request.user)
         profile_form = EditProfileForm(instance=request.user.custom_user)
@@ -86,6 +87,15 @@ def update_profile(request):
         'password_form': password_form,
         'role': ROLE_CHOICES[request.user.custom_user.role - 1][1]
     })
+
+
+class UserDetailView(View):
+
+    def get(self, request, pk):
+        profile = get_object_or_404(User, pk=pk)
+        return render(request, 'website/profile.html',
+                      {'profile': profile,
+                       'role': ROLE_CHOICES[profile.custom_user.role - 1][1]})
 
 
 @login_required
