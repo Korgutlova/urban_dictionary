@@ -38,7 +38,7 @@
             <ul class="navbar-nav flex-row">
                 {% if not user.is_authenticated %}
                     <li class="nav-item horizontal first">
-                        <a class="nav-link" href="#">Определения</a>
+                        <a class="nav-link" href="/">Определения</a>
                     </li>
                     <li class="nav-item horizontal">
                         <a class="nav-link" href="#">Поддержка</a>
@@ -48,7 +48,7 @@
                     </li>
                 {% else %}
                     <li class="nav-item horizontal first">
-                        <a class="nav-link" href="#">Определения</a>
+                        <a class="nav-link" href="/">Определения</a>
                     </li>
                     {% if not user.custom_user.is_admin %}
                         <li class="nav-item horizontal">
