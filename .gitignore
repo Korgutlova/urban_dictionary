@@ -61,4 +61,3 @@ target/
 .env
 #db.sqlite3
 .venv
-media/
