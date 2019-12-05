@@ -1,6 +1,23 @@
 {% extends 'website/base/base_page.html' %}
+{% block title %}
+    {% if popular_for_week %}
+        Популярное за неделю
+    {% elif favorites_page %}
+        Избранное
+    {% else %}
+        Результаты поиска
+    {% endif %}
+{% endblock %}
 {% load custom_tags %}
 {% block content %}
+    <br>
+    {% if popular_for_week %}
+        <h3>Популярное за неделю</h3>
+    {% elif favorites_page %}
+        <h3>Избранное</h3>
+    {% else %}
+        <h3>Результаты поиска</h3>
+    {% endif %}
     {% for definition in definitions %}
         <div style="margin: 30px">
             <br>
@@ -54,7 +71,7 @@
             <h3>Описание</h3>
             <a href="{% url "website:definition" definition.id %}" style="text-decoration: none">
                 <div class="div-info">
-                    <p>{{ definition.description }}</p>
+                    <p>{{ definition.short_description }}</p>
                 </div>
             </a>
             <h3>Примеры</h3>

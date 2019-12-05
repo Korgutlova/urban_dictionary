@@ -33,7 +33,7 @@ from website.models import Term, STATUSES, ROLE_CHOICES
 
 def main_page(request):
     return render(request, 'website/main_page.html',
-                  {'definitions': Definition.get_top_for_week})
+                  {'definitions': Definition.get_top_for_week, 'popular_for_week': True})
     # {'definitions': Definition.objects.all})
 
 
@@ -111,7 +111,7 @@ def create_definition(request):
                                 author=current_user)
         definition.save()
         if current_user.is_moderator() or current_user.is_admin():
-            definition.date = time.time()
+            definition.date = datetime.datetime.now()
             definition.save()
         else:
             rfp = RequestForPublication(definition=definition, date_creation=datetime.datetime.now())
@@ -315,7 +315,7 @@ def favourites(request):
     result = [fav.definition for fav in favs]
     return render(request, 'website/main_page.html',
                   # {'definitions': Definition.get_top_for_week})
-                  {'definitions': result})
+                  {'definitions': result, 'favorites_page': True})
 
 
 def random_definition(request):
@@ -332,7 +332,7 @@ def search(request):
     )
     if object_list:
         return render(request, 'website/main_page.html',
-                      {'definitions': object_list})
+                      {'definitions': object_list, 'search_page': True})
     else:
         return redirect("website:page_not_found")
 

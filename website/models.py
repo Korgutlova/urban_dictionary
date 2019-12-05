@@ -4,6 +4,7 @@ from django.contrib.auth.models import User
 from django.db import models
 from django.db.models.signals import post_save
 from django.dispatch import receiver
+from django.template.defaultfilters import truncatechars, truncatewords
 
 from website.enums import ROLE_CHOICES, STATUSES, STATUSES_FOR_REQUESTS, RATING_VALUES
 
@@ -79,6 +80,10 @@ class Definition(models.Model):
         if len(reqs) == 0:
             return -1
         return reqs.first().status
+
+    @property
+    def short_description(self):
+        return truncatewords(self.description, 80)
 
     @classmethod
     def get_top_for_week(cls):
