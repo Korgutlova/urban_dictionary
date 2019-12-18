@@ -93,9 +93,12 @@ class UserDetailView(View):
 
     def get(self, request, pk):
         profile = get_object_or_404(User, pk=pk)
+        user_definitions = Definition.objects.filter(author_id__exact=pk)
+        user_rating = sum(map(lambda x: x.get_likes() - x.get_dislikes(), user_definitions))
         return render(request, 'website/profile.html',
                       {'profile': profile,
-                       'role': ROLE_CHOICES[profile.custom_user.role - 1][1]})
+                       'role': ROLE_CHOICES[profile.custom_user.role - 1][1],
+                       'rating': user_rating})
 
 
 @login_required
