@@ -14,7 +14,7 @@ from django.shortcuts import render, redirect, get_object_or_404, render_to_resp
 from django.views.decorators.http import require_POST
 from django_registration.forms import User
 
-from website.enums import STATUSES_FOR_REQUESTS
+from website.enums import STATUSES_FOR_REQUESTS, ACTION_TYPES, USER, DEF
 
 try:
     from django.utils import simplejson as json
@@ -22,7 +22,8 @@ except ImportError:
     import json
 
 from website.forms import EditUserForm, EditProfileForm
-from website.models import Definition, Term, CustomUser, Example, UploadData, Rating, RequestForPublication, Favorites
+from website.models import Definition, Term, CustomUser, Example, UploadData, Rating, RequestForPublication, Favorites, \
+    Notification
 
 # Create your views here.
 from django.views import View
@@ -277,9 +278,15 @@ def like(request):
         elif defin.estimates.filter(user=user, estimate=0).exists():
             defin.estimates.get(user=user).delete()
             Rating(definition=defin, user=user, estimate=1).save()
+            if not defin.author is user:
+                Notification(date_creation=datetime.datetime.now(), action_type=ACTION_TYPES[1][0], user=defin.author,
+                             models_id="%s%s %s%s" % (USER, user.id, DEF, defin.id)).save()
         else:
             # add a new like for a company
             Rating(definition=defin, user=user, estimate=1).save()
+            if not defin.author is user:
+                Notification(date_creation=datetime.datetime.now(), action_type=ACTION_TYPES[1][0], user=defin.author,
+                             models_id="%s%s %s%s" % (USER, user.id, DEF, defin.id)).save()
 
         ctx = {'likes_count': defin.get_likes(), 'dislikes_count': defin.get_dislikes()}
         # use mimetype instead of content_type if django < 5
@@ -298,10 +305,16 @@ def dislike(request):
             defin.estimates.get(user=user).delete()
         elif defin.estimates.filter(user=user, estimate=1).exists():
             defin.estimates.get(user=user).delete()
+            if not defin.author is user:
+                Notification(date_creation=datetime.datetime.now(), user=defin.author,
+                             models_id="%s%s %s%s" % (USER, user.id, DEF, defin.id)).save()
             Rating(definition=defin, user=user, estimate=0).save()
         else:
             # add a new like for a company
             Rating(definition=defin, user=user, estimate=0).save()
+            if not defin.author is user:
+                Notification(date_creation=datetime.datetime.now(), user=defin.author,
+                             models_id="%s%s %s%s" % (USER, user.id, DEF, defin.id)).save()
 
         ctx = {'dislikes_count': defin.get_dislikes(), 'likes_count': defin.get_likes()}
         # use mimetype instead of content_type if django < 5
@@ -359,3 +372,12 @@ def requests_pub(request):
         return render(request, 'website/admin/requests_for_publication.html',
                       {'rfps': RequestForPublication.objects.filter(status=STATUSES_FOR_REQUESTS[0][0])})
     return redirect("website:page_not_found")
+
+
+def notifications(request):
+    user = request.user.custom_user
+    notifs = user.notifications.all()
+    for n in notifs:
+        n.new = False
+        n.save()
+    return render(request, "website/notifications.html", {"notifications": notifs})

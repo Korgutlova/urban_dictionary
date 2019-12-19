@@ -6,7 +6,7 @@ from django.db.models.signals import post_save
 from django.dispatch import receiver
 from django.template.defaultfilters import truncatechars, truncatewords
 
-from website.enums import ROLE_CHOICES, STATUSES, STATUSES_FOR_REQUESTS, RATING_VALUES
+from website.enums import ROLE_CHOICES, STATUSES, STATUSES_FOR_REQUESTS, RATING_VALUES, ACTION_TYPES, DEF, USER, SUPPORT
 
 
 class CustomUser(models.Model):
@@ -29,6 +29,9 @@ class CustomUser(models.Model):
 
     def is_admin(self):
         return self.role == ROLE_CHOICES[2][0]
+
+    def get_new_notification(self):
+        return len(self.notifications.filter(new=True))
 
 
 @receiver(post_save, sender=User)
@@ -202,11 +205,31 @@ class Favorites(models.Model):
 
 
 class Notification(models.Model):
-    info = models.TextField(verbose_name="Текст уведомления", blank=False)
-    date_creation = models.DateTimeField(auto_now_add=True, blank=False, verbose_name="Дата уведомления")
-    action_id = models.CharField(max_length=30, verbose_name="ID события")
+    date_creation = models.DateTimeField(auto_now_add=True, blank=False, null=False, verbose_name="Дата уведомления")
+    action_type = models.IntegerField(choices=ACTION_TYPES, blank=False, null=False,
+                                      default=ACTION_TYPES[0][0],
+                                      verbose_name="Тип события")
     user = models.ForeignKey(CustomUser, related_name='notifications', on_delete=models.CASCADE,
                              blank=False, null=False, verbose_name='Ссылка на пользователя')
+    models_id = models.CharField(max_length=50, verbose_name="Почта", default="", blank=True, null=True)
+    new = models.BooleanField(blank=False, null=False, default=True, verbose_name="Новое уведомление")
 
     def __str__(self):
-        return "Уведомление %s пользователя %s" % (self.info, self.user)
+        return "Уведомление %s пользователя %s" % (self.action_type, self.user)
+
+    def get_def(self):
+        return Definition.objects.get(pk=self.get_id(DEF))
+
+    def get_user(self):
+        return CustomUser.objects.get(pk=self.get_id(USER))
+
+    # TODO change return object
+    def get_request_support(self):
+        return self.get_id(SUPPORT)
+
+    def get_id(self, pref):
+        elems = str(self.models_id).split(" ")
+        for e in elems:
+            if pref in e:
+                return e[len(pref):]
+        return None

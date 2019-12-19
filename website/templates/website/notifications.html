@@ -1,0 +1,68 @@
+{% extends 'website/base/base_page.html' %}
+{% load static %}
+{% block title %} Уведомления
+{% endblock %}
+{% block content %}
+    <br>
+    <h3>Уведомления</h3>
+    <hr>
+    {% for notif in notifications %}
+        <div class="jumbotron">
+            <div class="row">
+                <div class="col-md-9">
+                    {% if notif.action_type == 0 %}
+                        <p>Пользователь <a
+                                href="{% url "website:profile" notif.get_user.id %}"> {{ notif.get_user }}</a>
+                            поставил
+                            Вам дизлайк на определение <a
+                                    href="{% url "website:definition" notif.get_def.id %}">{{ notif.get_def.term.name }}</a>
+                        </p>
+                    {% elif  notif.action_type == 1 %}
+                        <p>Пользователь <a
+                                href="{% url "website:profile" notif.get_user.id %}"> {{ notif.get_user }}</a>
+                            поставил
+                            Вам лайк на определение <a
+                                    href="{% url "website:definition" notif.get_def.id %}">{{ notif.get_def.term.name }}</a>
+                        </p>
+                    {% elif  notif.action_type == 2 %}
+                        <p>Ваш статус составляет сейчас <strong>63</strong> Вы можете повысить свой статус до модератора
+                            определений
+                            <a href="#">Повысить</a></p>
+                    {% elif  notif.action_type == 3 %}
+                        <P>Администратор обновил ваш статус до модератора, поздравляем! Теперь вы можете публиковать
+                            определения
+                            без
+                            подтверждерния администратором</P>
+                    {% elif  notif.action_type == 4 %}
+                        <p>Администратор отправил ваше определение на доработку <a href="#">Запись</a></p>
+                    {% elif  notif.action_type == 5 %}
+                        <p>Администратор отклонил ваше определение <a href="#">Запись</a></p>
+                    {% elif  notif.action_type == 6 %}
+                        <p>Ваше определение было опубликовано<a href="#">Запись</a></p>
+                    {% elif  notif.action_type == 7 %}
+                        <p>Вы были заблокированы администратором по причине <strong>причина</strong> до <strong>такого
+                            числа</strong></p>
+                    {% elif  notif.action_type == 8 %}
+                        <p>Вы были разблокированы администратором</p>
+                    {% elif  notif.action_type == 9 %}
+                        <p>Ваша блокировка истекла <strong>такого числа</strong>, вы снова можете постить определения!
+                        </p>
+                    {% elif  notif.action_type == 10 %}
+                        <p>Ваша статья <a href="#">Запись</a> была добавлена в избранное пользователем <a
+                                href="#">Миха</a>
+                        </p>
+                    {% elif  notif.action_type == 11 %}
+                        <p>Поддержка ответила вам на почту <strong>почта</strong> по вашему вопросу
+                            <strong>вопрос</strong>
+                        </p>
+                    {% endif %}
+                </div>
+                <div class="col-md-3" style="text-align: right; font-size: 18px">
+                    <p><i>{{ notif.date_creation }}</i></p>
+                </div>
+            </div>
+        </div>
+    {% endfor %}
+    <br>
+    <br>
+{% endblock %}
