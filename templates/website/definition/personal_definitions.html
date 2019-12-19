@@ -1,11 +1,11 @@
 {% extends 'website/base/base_page.html' %}
 {% load custom_tags %}
 {% block title %}
-    Мои определения
+    {% if target_user == user %}Мои определения{% else %}Определения пользователя{% endif %}
 {% endblock %}
 {% block content %}
     <br>
-    <h3>Мои определения</h3>
+    <h3>{% if target_user == user %}Мои определения{% else %}Определения пользователя {{ target_user.user.username }}{% endif %}</h3>
     <hr>
     {% for definition in definitions %}
         <div style="margin: 30px">

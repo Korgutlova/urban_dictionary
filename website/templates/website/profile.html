@@ -15,10 +15,10 @@
                         </div>
                     </div>
                     <div class="col d-flex flex-column flex-sm-row justify-content-between mb-3">
-                        <div class="text-center text-sm-left mb-2 mb-sm-0">
+                        <div class="text-sm-left mb-2 mb-sm-0">
                             <h4 class="pt-sm-2 pb-1 mb-0 text-nowrap">{{ profile.first_name }} {{ profile.last_name }}</h4>
-                            <p class="mb-0">{{ profile.custom_user.user.username }}</p>
-                            <p class="mb-0 user-rating">Рейтинг пользователя: {{ rating }}</p>
+                            <p class="mb-0">{{ profile.custom_user.user.email }}</p>
+                            <p class="text-center mb-0 user-rating">Рейтинг пользователя: {{ rating }}</p>
                         </div>
                         <div class="text-center text-sm-right">
                             <span class="badge badge-secondary">{{ role }}</span>
@@ -32,6 +32,10 @@
                                 </div>
                                 <div class="col d-flex justify-content-end" style="margin: 10px">
                                     <a class="btn btn-primary" href="{% url 'logout' %}">Выйти</a>
+                                </div>
+                            {% else %}
+                                <div class="col d-flex justify-content-end" style="margin-top: 30px">
+                                    <a class="btn btn-primary" href="{% url 'website:user_definitions' profile.id %}">Определения пользователя ({{ definition_number }})</a>
                                 </div>
                             {% endif %}
                         </div>

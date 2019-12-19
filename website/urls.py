@@ -12,6 +12,7 @@ urlpatterns = [
     path(r'activate_user/', activate_user, name='activate_user'),
     path(r'random_definition', random_definition, name='random_definition'),
     path(r'personal_definitions/', personal_definitions, name='personal_definitions'),
+    path(r'user_definitions/<int:pk>', user_definitions, name='user_definitions'),
     path(r'definition/<int:pk>', definition, name='definition'),
     path(r'definition/edit/<int:pk>', edit_definition, name='edit_definition'),
     path(r'definition/check/<int:pk>', request_for_definition, name='request_for_definition'),

@@ -94,11 +94,13 @@ class UserDetailView(View):
     def get(self, request, pk):
         profile = get_object_or_404(User, pk=pk)
         user_definitions = Definition.objects.filter(author_id__exact=pk)
-        user_rating = sum(map(lambda x: x.get_likes() - x.get_dislikes(), user_definitions))
+        user_rating = str(sum(map(lambda x: x.get_likes() - x.get_dislikes(), user_definitions)))
+        definition_number = Definition.objects.filter(author_id__exact=pk).count()
         return render(request, 'website/profile.html',
                       {'profile': profile,
                        'role': ROLE_CHOICES[profile.custom_user.role - 1][1],
-                       'rating': user_rating})
+                       'rating': user_rating,
+                       'definition_number': definition_number})
 
 
 @login_required
@@ -234,11 +236,22 @@ def definition(request, pk):
         return redirect("website:page_not_found")
 
 
+def user_definitions(request, pk):
+    target_user = get_object_or_404(CustomUser, pk=pk)
+    if target_user != request.user.custom_user:
+        return render(request, "website/definition/personal_definitions.html",
+                      {"definitions": Definition.objects.filter(author__exact=target_user),
+                       'target_user': target_user})
+    else:
+        return redirect('website:personal_definitions')
+
+
 def personal_definitions(request):
     if request.user.is_authenticated:
         current_user = request.user.custom_user
         return render(request, "website/definition/personal_definitions.html",
-                      {"definitions": Definition.objects.filter(author=current_user)})
+                      {"definitions": Definition.objects.filter(author=current_user),
+                       'target_user': current_user})
     return redirect("website:page_not_found")
 
 
