@@ -6,7 +6,8 @@ from django.db.models.signals import post_save
 from django.dispatch import receiver
 from django.template.defaultfilters import truncatechars, truncatewords
 
-from website.enums import ROLE_CHOICES, STATUSES, STATUSES_FOR_REQUESTS, RATING_VALUES, ACTION_TYPES, DEF, USER, SUPPORT
+from website.enums import ROLE_CHOICES, STATUSES, STATUSES_FOR_REQUESTS, RATING_VALUES, ACTION_TYPES, DEF, USER, \
+    SUPPORT, RFP
 
 
 class CustomUser(models.Model):
@@ -20,6 +21,9 @@ class CustomUser(models.Model):
                                  verbose_name="Статус")
 
     photo = models.ImageField(upload_to='profile_pics', default='profile_pics/default.jpg')
+
+    def get_rating(self):
+        return str(sum(map(lambda x: x.get_likes() - x.get_dislikes(), self.definitions.all())))
 
     def __str__(self):
         return self.user.username
@@ -144,7 +148,7 @@ class RequestForPublication(models.Model):
     old_request = models.ForeignKey("self", blank=True, null=True, verbose_name="Старый запрос на публикацию",
                                     on_delete=models.SET_NULL)
 
-    date_creation = models.DateTimeField(blank=False, verbose_name="Дата создания запроса")
+    date_creation = models.DateTimeField(blank=False, null=False, verbose_name="Дата создания запроса")
 
     def __str__(self):
         return "Запрос на публикацию определения %s" % self.definition
@@ -205,7 +209,7 @@ class Favorites(models.Model):
 
 
 class Notification(models.Model):
-    date_creation = models.DateTimeField(auto_now_add=True, blank=False, null=False, verbose_name="Дата уведомления")
+    date_creation = models.DateTimeField(blank=False, null=False, verbose_name="Дата уведомления")
     action_type = models.IntegerField(choices=ACTION_TYPES, blank=False, null=False,
                                       default=ACTION_TYPES[0][0],
                                       verbose_name="Тип события")
@@ -222,6 +226,9 @@ class Notification(models.Model):
 
     def get_user(self):
         return CustomUser.objects.get(pk=self.get_id(USER))
+
+    def get_rfp(self):
+        return RequestForPublication.objects.get(pk=self.get_id(RFP))
 
     # TODO change return object
     def get_request_support(self):

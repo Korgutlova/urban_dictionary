@@ -14,7 +14,7 @@ from django.shortcuts import render, redirect, get_object_or_404, render_to_resp
 from django.views.decorators.http import require_POST
 from django_registration.forms import User
 
-from website.enums import STATUSES_FOR_REQUESTS, ACTION_TYPES, USER, DEF
+from website.enums import STATUSES_FOR_REQUESTS, ACTION_TYPES, USER, DEF, RFP
 
 try:
     from django.utils import simplejson as json
@@ -120,8 +120,17 @@ def create_definition(request):
             definition.date = datetime.datetime.now()
             definition.save()
         else:
-            rfp = RequestForPublication(definition=definition, date_creation=datetime.datetime.now())
+            cur_date = datetime.datetime.now()
+            rfp = RequestForPublication(definition=definition, date_creation=cur_date)
             rfp.save()
+
+            # send notifications to all admins
+
+            admins = CustomUser.objects.filter(role=3)
+            for admin in admins:
+                Notification(date_creation=cur_date, user=admin, action_type=ACTION_TYPES[12][0],
+                             models_id="%s%s %s%s" % (USER, current_user.id, RFP, rfp.id)).save()
+
         examples = request.POST.getlist("examples")
         primary = int(request.POST.get("primary"))
         for i, ex in enumerate(examples):
@@ -213,11 +222,20 @@ def request_for_definition(request, pk):
             rfp.status = STATUSES_FOR_REQUESTS[2][0]
             rfp.definition.date = datetime.datetime.now()
             rfp.definition.save()
+            Notification(date_creation=datetime.datetime.now(), user=rfp.definition.author,
+                         action_type=ACTION_TYPES[6][0],
+                         models_id="%s%s" % (DEF, rfp.definition.id)).save()
         else:
             if answer == "reject":
                 rfp.status = STATUSES_FOR_REQUESTS[1][0]
+                Notification(date_creation=datetime.datetime.now(), user=rfp.definition.author,
+                             action_type=ACTION_TYPES[4][0],
+                             models_id="%s%s" % (DEF, rfp.definition.id)).save()
             else:
                 rfp.status = STATUSES_FOR_REQUESTS[3][0]
+                Notification(date_creation=datetime.datetime.now(), user=rfp.definition.author,
+                             action_type=ACTION_TYPES[5][0],
+                             models_id="%s%s" % (DEF, rfp.definition.id)).save()
             rfp.reason = request.POST["reason"]
         rfp.save()
         return redirect('website:requests_pub')
@@ -278,13 +296,13 @@ def like(request):
         elif defin.estimates.filter(user=user, estimate=0).exists():
             defin.estimates.get(user=user).delete()
             Rating(definition=defin, user=user, estimate=1).save()
-            if not defin.author is user:
+            if defin.author.id != user.id:
                 Notification(date_creation=datetime.datetime.now(), action_type=ACTION_TYPES[1][0], user=defin.author,
                              models_id="%s%s %s%s" % (USER, user.id, DEF, defin.id)).save()
         else:
             # add a new like for a company
             Rating(definition=defin, user=user, estimate=1).save()
-            if not defin.author is user:
+            if defin.author.id != user.id:
                 Notification(date_creation=datetime.datetime.now(), action_type=ACTION_TYPES[1][0], user=defin.author,
                              models_id="%s%s %s%s" % (USER, user.id, DEF, defin.id)).save()
 
@@ -305,14 +323,14 @@ def dislike(request):
             defin.estimates.get(user=user).delete()
         elif defin.estimates.filter(user=user, estimate=1).exists():
             defin.estimates.get(user=user).delete()
-            if not defin.author is user:
+            if defin.author.id != user.id:
                 Notification(date_creation=datetime.datetime.now(), user=defin.author,
                              models_id="%s%s %s%s" % (USER, user.id, DEF, defin.id)).save()
             Rating(definition=defin, user=user, estimate=0).save()
         else:
             # add a new like for a company
             Rating(definition=defin, user=user, estimate=0).save()
-            if not defin.author is user:
+            if defin.author.id != user.id:
                 Notification(date_creation=datetime.datetime.now(), user=defin.author,
                              models_id="%s%s %s%s" % (USER, user.id, DEF, defin.id)).save()
 
@@ -332,6 +350,9 @@ def favourite(request):
             colour = 'black'
         else:
             Favorites(definition=defin, user=user).save()
+            if not defin.author is user:
+                Notification(date_creation=datetime.datetime.now(), user=defin.author, action_type=ACTION_TYPES[10][0],
+                             models_id="%s%s %s%s" % (USER, user.id, DEF, defin.id)).save()
             colour = 'red'
 
         ctx = {'colour': colour}
@@ -370,13 +391,14 @@ def requests_pub(request):
     user = request.user.custom_user
     if user.is_admin():
         return render(request, 'website/admin/requests_for_publication.html',
-                      {'rfps': RequestForPublication.objects.filter(status=STATUSES_FOR_REQUESTS[0][0])})
+                      {'rfps': RequestForPublication.objects.order_by(
+                          "-date_creation").filter(status=STATUSES_FOR_REQUESTS[0][0])})
     return redirect("website:page_not_found")
 
 
 def notifications(request):
     user = request.user.custom_user
-    notifs = user.notifications.all()
+    notifs = user.notifications.all().order_by("-date_creation")
     for n in notifs:
         n.new = False
         n.save()
