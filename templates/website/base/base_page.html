@@ -41,7 +41,7 @@
                         <a class="nav-link" href="/">Определения</a>
                     </li>
                     <li class="nav-item horizontal">
-                        <a class="nav-link" href="#">Поддержка</a>
+                        <a class="nav-link" href="{% url "website:support" %}">Поддержка</a>
                     </li>
                     <li class="nav-item horizontal">
                         <a class="nav-link" href="{% url 'login' %}">Войти</a>
@@ -57,10 +57,10 @@
                         <li class="nav-item horizontal">
                             <a class="nav-link" href="{% url "website:favourites_list" %}">Избранное</a>
                         </li>
-                        <li class="nav-item horizontal">
-                            <a class="nav-link" href="#">Поддержка</a>
-                        </li>
                     {% endif %}
+                    <li class="nav-item horizontal">
+                        <a class="nav-link" href="{% url "website:support" %}">Поддержка</a>
+                    </li>
                     <li class="nav-item horizontal">
                         <a class="nav-link" href="{% url "website:notifications" %}">Уведомления
                             {% if user.custom_user.get_new_notification != 0 %}

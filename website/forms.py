@@ -1,6 +1,6 @@
 from django import forms
 from django.contrib.auth.models import User
-from website.models import CustomUser
+from website.models import CustomUser, Support
 
 
 class EditUserForm(forms.ModelForm):
@@ -13,5 +13,3 @@ class EditProfileForm(forms.ModelForm):
     class Meta:
         model = CustomUser
         fields = ('description', 'photo')
-
-class SupportForm(forms.ModelForm):

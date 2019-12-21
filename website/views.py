@@ -1,6 +1,7 @@
 import datetime
 import random
 import time
+import os.path
 
 from django import template
 from django.contrib.auth import update_session_auth_hash
@@ -9,19 +10,21 @@ from django.contrib.auth.forms import PasswordChangeForm
 from django.core.files.storage import FileSystemStorage
 from django.db import transaction
 from django.db.models import Q
-from django.http import HttpResponse
+from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render, redirect, get_object_or_404, render_to_response
 from django.views.decorators.http import require_POST
 from django_registration.forms import User
+from django.core.mail import send_mail
 
 from website.enums import STATUSES_FOR_REQUESTS, ACTION_TYPES, USER, DEF, RFP
+from urban_dictionary.settings import EMAIL_HOST_USER
 
 try:
     from django.utils import simplejson as json
 except ImportError:
     import json
 
-from website.forms import EditUserForm, EditProfileForm
+from website.forms import *
 from website.models import Definition, Term, CustomUser, Example, UploadData, Rating, RequestForPublication, Favorites, \
     Notification
 
@@ -50,6 +53,47 @@ def activate_user(request):
     request.user.custom_user.status = STATUSES[0][0]
     request.user.save()
     return redirect('website:update_profile')
+
+
+def ask_support(request):
+    if not request.user.is_anonymous:
+        if request.user.custom_user.is_admin():
+            if request.method == 'POST':
+                return HttpResponseRedirect(request.META.get('HTTP_REFERER', '/'))
+            return render(request, 'website/support_list.html',
+                          {'questions': Support.objects.filter(answer__isnull=True).order_by("date_creation")})
+    if request.method == 'POST':
+        question = Support(question=request.POST["question"], name=request.POST["name"], email=request.POST["email"],
+                           date_creation=datetime.datetime.now())
+        question.save()
+        return render(request, 'website/support_done.html', {'email': question.email})
+    return render(request, 'website/support.html', {})
+
+
+@login_required
+def answer_support(request, pk):
+    if request.user.custom_user.is_admin():
+        question = get_object_or_404(Support, pk=pk)
+        if request.method == 'POST':
+            question.answer = request.POST['answer']
+            question.save()
+
+            BASE = os.path.dirname(os.path.abspath(__file__))
+            with open(os.path.join(BASE, "support_mail.txt"), 'r', encoding="utf-8") as support_mail:
+                email_text = support_mail.read()\
+                    .replace("question_Q8Vx q]vYfs$*7c,<tyfP|SCdr+wl+m2N{.uY.[a9&mR1zmHL}8[Xz V&36X||0t", question.question)\
+                    .replace("answer_q+W{ceC)}*<la~K9C{)>CLfUNY6[?c|u=JVT[)`L8*R|=qw,C?x &A:Bvv^tQD^D", question.answer)
+                send_mail('Ответ на вопрос на сайте {}'.format(request.META['HTTP_HOST']),
+                          email_text,
+                          EMAIL_HOST_USER,
+                          [question.email],
+                          fail_silently=False)
+            return redirect('website:support')
+        return render(request, 'website/support_answer.html', {
+            'question': question
+        })
+    else:
+        redirect('website:main_page')
 
 
 @login_required

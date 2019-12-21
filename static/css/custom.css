@@ -111,11 +111,17 @@ img.profile_thumbnail {
     border-left: 6px solid #f34d55;
 }
 
-.user-rating{
+.user-rating {
     margin-top: 15px;
     background-color: gray;
     padding: 5px;
     color: white;
     border: 1px;
     border-radius: .25rem;
+}
+
+.truncate {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }

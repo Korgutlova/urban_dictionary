@@ -24,5 +24,7 @@ urlpatterns = [
     path(r'search/', search, name='search'),
     path(r'requests/', requests_pub, name='requests_pub'),
     path(r'profile/<int:pk>', UserDetailView.as_view(), name='profile'),
-    path(r'notifications', notifications, name='notifications')
+    path(r'notifications', notifications, name='notifications'),
+    path(r'support/', ask_support, name='support'),
+    path(r'support/<int:pk>', answer_support, name='answer_support')
 ]
