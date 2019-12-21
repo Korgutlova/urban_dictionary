@@ -23,7 +23,7 @@ except ImportError:
 
 from website.forms import EditUserForm, EditProfileForm
 from website.models import Definition, Term, CustomUser, Example, UploadData, Rating, RequestForPublication, Favorites, \
-    Notification
+    Notification, RequestUpdateStatus
 
 # Create your views here.
 from django.views import View
@@ -403,3 +403,16 @@ def notifications(request):
         n.new = False
         n.save()
     return render(request, "website/notifications.html", {"notifications": notifs})
+
+
+def create_request_for_update_status(request, val):
+    pass
+
+
+def update_status(request, pk):
+    pass
+
+
+def requests_for_update_status(request):
+    return render(request, "website/admin/requests_for_update_status.html",
+                  {"rups": RequestUpdateStatus.objects.filter(status=1)})

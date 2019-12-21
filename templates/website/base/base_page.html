@@ -72,6 +72,10 @@
                             <a class="nav-link" href="{% url "website:requests_pub" %}">Запросы на
                                 публикацию</a>
                         </li>
+                        <li class="nav-item horizontal">
+                            <a class="nav-link" href="{% url "website:requests_for_update_status" %}">Запросы на
+                                обновление статуса</a>
+                        </li>
                     {% endif %}
                     <li class="nav-item horizontal">
                         <a href="{% url 'website:profile' user.id %}">
