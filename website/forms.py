@@ -13,3 +13,5 @@ class EditProfileForm(forms.ModelForm):
     class Meta:
         model = CustomUser
         fields = ('description', 'photo')
+
+class SupportForm(forms.ModelForm):

@@ -240,3 +240,9 @@ class Notification(models.Model):
             if pref in e:
                 return e[len(pref):]
         return None
+
+class SupportQuestion(models.Model):
+    text = models.TextField(verbose_name="Ваш вопрос", blank=False)
+    email = models.CharField(max_length=50, verbose_name="Почта")
+    date_creation = models.DateTimeField(blank=False, null=False, verbose_name="Дата")
+    status =
