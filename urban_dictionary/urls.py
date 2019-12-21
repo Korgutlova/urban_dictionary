@@ -25,6 +25,7 @@ from website.views import custom_handler404
 urlpatterns = [
     path(r'admin/', admin.site.urls),
     path(r'urban/', include('website.urls', namespace="website")),
+    path(r'api/', include('api.urls', namespace="api")),
     path(r'accounts/', include('django_registration.backends.activation.urls')),
     path(r'accounts/', include('django.contrib.auth.urls')),
     path(r'', RedirectView.as_view(url='/urban/', permanent=True)),

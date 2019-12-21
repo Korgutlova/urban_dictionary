@@ -3,6 +3,10 @@ astor==0.8.0
 backcall==0.1.0
 cachetools==3.1.1
 certifi==2018.11.29
+<<<<<<< HEAD
+cexprtk==0.3.3
+=======
+>>>>>>> 050abfaa0217ae9c072408119f6c21c12bfb3c3d
 chardet==3.0.4
 Click==7.0
 colorama==0.4.1
@@ -20,6 +24,10 @@ gast==0.2.2
 google-auth==1.7.0
 google-auth-oauthlib==0.4.1
 google-pasta==0.1.8
+<<<<<<< HEAD
+grpcio==1.25.0
+=======
+>>>>>>> 050abfaa0217ae9c072408119f6c21c12bfb3c3d
 h5py==2.10.0
 idna==2.8
 imageio==2.6.1
