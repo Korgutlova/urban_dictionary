@@ -1,11 +1,11 @@
 {% extends 'website/base/base_page.html' %}
 {% load custom_tags %}
 {% block title %}
-    Мои определения
+    {% if target_user == user %}Мои определения{% else %}Определения пользователя{% endif %}
 {% endblock %}
 {% block content %}
     <br>
-    <h3>Мои определения</h3>
+    <h3>{% if target_user == user %}Мои определения{% else %}Определения пользователя {{ target_user.user.username }}{% endif %}</h3>
     <hr>
     {% for definition in definitions %}
         <div style="margin: 30px">
@@ -15,7 +15,7 @@
                     <a href={% url 'website:term' definition.term.id %}><h3>{{ definition.term.name }}</h3></a>
                     {% if user.custom_user == definition.author %}
                         <p>Статус статьи - {% if definition.is_publish %}
-                            <i style="color: green">Опубликовано</i>
+                            <i style="color: green">Опубликовано</i>bc
                         {% else %}
                             {% if  definition.get_cur_status == 1 %}
                                 <i style="color: #0a1cff">На рассмотрении </i>

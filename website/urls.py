@@ -12,6 +12,7 @@ urlpatterns = [
     path(r'activate_user/', activate_user, name='activate_user'),
     path(r'random_definition', random_definition, name='random_definition'),
     path(r'personal_definitions/', personal_definitions, name='personal_definitions'),
+    path(r'user_definitions/<int:pk>', user_definitions, name='user_definitions'),
     path(r'definition/<int:pk>', definition, name='definition'),
     path(r'definition/edit/<int:pk>', edit_definition, name='edit_definition'),
     path(r'definition/check/<int:pk>', request_for_definition, name='request_for_definition'),
@@ -22,5 +23,8 @@ urlpatterns = [
     path(r'favourites/', favourites, name='favourites_list'),
     path(r'search/', search, name='search'),
     path(r'requests/', requests_pub, name='requests_pub'),
-    path(r'profile/<int:pk>', UserDetailView.as_view(), name='profile')
+    path(r'profile/<int:pk>', UserDetailView.as_view(), name='profile'),
+    path(r'notifications', notifications, name='notifications'),
+    path(r'support/', ask_support, name='support'),
+    path(r'support/<int:pk>', answer_support, name='answer_support')
 ]

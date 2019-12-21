@@ -3,7 +3,10 @@ astor==0.8.0
 backcall==0.1.0
 cachetools==3.1.1
 certifi==2018.11.29
+<<<<<<< HEAD
 cexprtk==0.3.3
+=======
+>>>>>>> 050abfaa0217ae9c072408119f6c21c12bfb3c3d
 chardet==3.0.4
 Click==7.0
 colorama==0.4.1
@@ -21,7 +24,10 @@ gast==0.2.2
 google-auth==1.7.0
 google-auth-oauthlib==0.4.1
 google-pasta==0.1.8
+<<<<<<< HEAD
 grpcio==1.25.0
+=======
+>>>>>>> 050abfaa0217ae9c072408119f6c21c12bfb3c3d
 h5py==2.10.0
 idna==2.8
 imageio==2.6.1
@@ -34,13 +40,10 @@ Keras-Applications==1.0.8
 Keras-Preprocessing==1.1.0
 kiwisolver==1.1.0
 labelme==3.16.7
-lxml==4.3.2
 Markdown==3.1.1
-matplotlib==3.1.1
 mock==3.0.5
 mrcnn==0.2
 networkx==2.4
-numpy==1.16.2
 oauthlib==3.1.0
 opencv-python==4.1.1.26
 openpyxl==2.6.0
