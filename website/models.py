@@ -254,3 +254,13 @@ class RequestUpdateStatus(models.Model):
 
     def __str__(self):
         return "Запрос на обновление статуса до модератора для пользователя %s" % self.user
+
+class Support(models.Model):
+    question = models.TextField(verbose_name="Ваш вопрос", blank=False)
+    name = models.TextField(verbose_name="Ваше имя", blank=False, default="Аноним")
+    email = models.CharField(max_length=50, verbose_name="Почта")
+    date_creation = models.DateTimeField(blank=False, null=False, verbose_name="Дата")
+    answer = models.TextField(verbose_name="Ответ", blank=False, null=True)
+
+    def __str__(self):
+        return "Вопрос %s от пользователя %s" % (self.question, self.email)
