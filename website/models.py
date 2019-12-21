@@ -7,7 +7,7 @@ from django.dispatch import receiver
 from django.template.defaultfilters import truncatechars, truncatewords
 
 from website.enums import ROLE_CHOICES, STATUSES, STATUSES_FOR_REQUESTS, RATING_VALUES, ACTION_TYPES, DEF, USER, \
-    SUPPORT, RFP
+    SUPPORT, RFP, RUPS
 
 
 class CustomUser(models.Model):
@@ -230,6 +230,9 @@ class Notification(models.Model):
     def get_rfp(self):
         return RequestForPublication.objects.get(pk=self.get_id(RFP))
 
+    def get_rups(self):
+        return RequestUpdateStatus.objects.get(pk=self.get_id(RUPS))
+
     # TODO change return object
     def get_request_support(self):
         return self.get_id(SUPPORT)
@@ -240,3 +243,14 @@ class Notification(models.Model):
             if pref in e:
                 return e[len(pref):]
         return None
+
+
+class RequestUpdateStatus(models.Model):
+    status = models.IntegerField(choices=STATUSES_FOR_REQUESTS, blank=False, null=False,
+                                 default=STATUSES_FOR_REQUESTS[0][0],
+                                 verbose_name="Статус обновления уровня профиля")
+    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name="update_status")
+    date_creation = models.DateTimeField(blank=False, null=False, verbose_name="Дата создания запроса")
+
+    def __str__(self):
+        return "Запрос на обновление статуса до модератора для пользователя %s" % self.user
