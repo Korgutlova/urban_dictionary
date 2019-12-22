@@ -429,8 +429,8 @@ def search(request):
     query = request.GET.get('q')
     object_list = Definition.objects.filter(
         Q(description__icontains=query) | Q(term__name__icontains=query)
-        # TO DO only publish display deefinition method is_publish
     )
+    object_list = [d for d in object_list if d.is_publish()]
     if object_list:
         return render(request, 'website/main_page.html',
                       {'definitions': object_list, 'search_page': True})
