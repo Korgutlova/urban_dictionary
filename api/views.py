@@ -15,5 +15,5 @@ def definition(request):
     for d in object_list:
         result.append(d.description + '%20')
     if not result:
-        return HttpResponse('Слово не найдено')
+        return HttpResponse('Слово не найдено%20')
     return HttpResponse(result)

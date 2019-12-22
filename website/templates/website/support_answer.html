@@ -8,7 +8,10 @@
             <div class="e-profile">
                 <div class="text-sm-left mb-2 mb-sm-0">
                     <h4 class="pt-sm-2 pb-1 mb-0 text-nowrap">Вопрос от пользователя: {{ question.name }}</h4>
-                    <p class="mb-0" style="margin-top: 20px">{{ question.question }}</p>
+                    <br>
+                    <div class="jumbotron"><p class="mb-0">{{ question.question }}</p></div>
+                    <p class="mb-0" style="color: gray; font-size: 18px">Ответ будет отправлен на
+                        почту {{ question.email }}</p>
                 </div>
                 <form method="post" action="{% url "website:answer_support" question.id %}">
                     {% csrf_token %}

@@ -26,8 +26,8 @@ urlpatterns = [
     path(r'requests/', requests_pub, name='requests_pub'),
     path(r'profile/<int:pk>', UserDetailView.as_view(), name='profile'),
     path(r'notifications', notifications, name='notifications'),
-    path(r'update_status/<int:pk>', update_status, name='update_status'),
-    path(r'create_request_for_update_status/<int:val>', create_request_for_update_status,
+    path(r'update_status/<int:pk>/<str:answer>', update_status, name='update_status'),
+    path(r'create_request_for_update_status', create_request_for_update_status,
          name='create_request_for_update_status'),
     path(r'support/', ask_support, name='support'),
     path(r'support/<int:pk>', answer_support, name='answer_support')

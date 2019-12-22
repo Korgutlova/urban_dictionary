@@ -16,7 +16,7 @@ from django.views.decorators.http import require_POST
 from django_registration.forms import User
 from django.core.mail import send_mail
 
-from website.enums import STATUSES_FOR_REQUESTS, ACTION_TYPES, USER, DEF, RFP
+from website.enums import STATUSES_FOR_REQUESTS, ACTION_TYPES, USER, DEF, RFP, RUPS, SUP
 from urban_dictionary.settings import EMAIL_HOST_USER
 
 try:
@@ -61,11 +61,17 @@ def ask_support(request):
             if request.method == 'POST':
                 return HttpResponseRedirect(request.META.get('HTTP_REFERER', '/'))
             return render(request, 'website/support_list.html',
-                          {'questions': Support.objects.filter(answer__isnull=True).order_by("date_creation")})
+                          {'questions': Support.objects.filter(answer__isnull=True).order_by("-date_creation")})
     if request.method == 'POST':
         question = Support(question=request.POST["question"], name=request.POST["name"], email=request.POST["email"],
                            date_creation=datetime.datetime.now())
+        if not request.user.is_anonymous:
+            question.user = request.user.custom_user
         question.save()
+        for admin in CustomUser.objects.filter(role=3):
+            Notification(date_creation=datetime.datetime.now(), user=admin,
+                         action_type=ACTION_TYPES[14][0],
+                         models_id="%s%s" % (SUP, question.id)).save()
         return render(request, 'website/support_done.html', {'email': question.email})
     return render(request, 'website/support.html', {})
 
@@ -80,14 +86,19 @@ def answer_support(request, pk):
 
             BASE = os.path.dirname(os.path.abspath(__file__))
             with open(os.path.join(BASE, "support_mail.txt"), 'r', encoding="utf-8") as support_mail:
-                email_text = support_mail.read()\
-                    .replace("question_Q8Vx q]vYfs$*7c,<tyfP|SCdr+wl+m2N{.uY.[a9&mR1zmHL}8[Xz V&36X||0t", question.question)\
+                email_text = support_mail.read() \
+                    .replace("question_Q8Vx q]vYfs$*7c,<tyfP|SCdr+wl+m2N{.uY.[a9&mR1zmHL}8[Xz V&36X||0t",
+                             question.question) \
                     .replace("answer_q+W{ceC)}*<la~K9C{)>CLfUNY6[?c|u=JVT[)`L8*R|=qw,C?x &A:Bvv^tQD^D", question.answer)
                 send_mail('Ответ на вопрос на сайте {}'.format(request.META['HTTP_HOST']),
                           email_text,
                           EMAIL_HOST_USER,
                           [question.email],
                           fail_silently=False)
+            if not question.user is None:
+                Notification(date_creation=datetime.datetime.now(), user=question.user,
+                             action_type=ACTION_TYPES[11][0],
+                             models_id="%s%s" % (SUP, question.id)).save()
             return redirect('website:support')
         return render(request, 'website/support_answer.html', {
             'question': question
@@ -167,11 +178,7 @@ def create_definition(request):
             cur_date = datetime.datetime.now()
             rfp = RequestForPublication(definition=definition, date_creation=cur_date)
             rfp.save()
-
-            # send notifications to all admins
-
-            admins = CustomUser.objects.filter(role=3)
-            for admin in admins:
+            for admin in CustomUser.objects.filter(role=3):
                 Notification(date_creation=cur_date, user=admin, action_type=ACTION_TYPES[12][0],
                              models_id="%s%s %s%s" % (USER, current_user.id, RFP, rfp.id)).save()
 
@@ -394,7 +401,7 @@ def favourite(request):
             colour = 'black'
         else:
             Favorites(definition=defin, user=user).save()
-            if not defin.author is user:
+            if defin.author.id != user.id:
                 Notification(date_creation=datetime.datetime.now(), user=defin.author, action_type=ACTION_TYPES[10][0],
                              models_id="%s%s %s%s" % (USER, user.id, DEF, defin.id)).save()
             colour = 'red'
@@ -449,12 +456,30 @@ def notifications(request):
     return render(request, "website/notifications.html", {"notifications": notifs})
 
 
-def create_request_for_update_status(request, val):
-    pass
+def create_request_for_update_status(request):
+    user = request.user.custom_user
+    rup = RequestUpdateStatus(date_creation=datetime.datetime.now(), user=user)
+    rup.save()
+    for admin in CustomUser.objects.filter(role=3):
+        Notification(date_creation=datetime.datetime.now(), user=admin, action_type=ACTION_TYPES[13][0],
+                     models_id="%s%s" % (RUPS, rup.id)).save()
+    return redirect('website:profile', pk=user.id)
 
 
-def update_status(request, pk):
-    pass
+def update_status(request, pk, answer):
+    rup = RequestUpdateStatus.objects.get(pk=pk)
+    if answer == "accept":
+        rup.status = 3
+        rup.save()
+        user = rup.user
+        user.role = 2
+        user.save()
+    else:
+        rup.status = 2
+        rup.save()
+    Notification(date_creation=datetime.datetime.now(), user=rup.user, action_type=ACTION_TYPES[3][0],
+                 models_id="%s%s" % (RUPS, rup.id)).save()
+    return redirect("website:requests_for_update_status")
 
 
 def requests_for_update_status(request):

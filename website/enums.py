@@ -1,8 +1,19 @@
+# FOR UPDATE STATUS
+
+# DEF_AMOUNT = 50
+# PERCENTAGE_OF_LIKES = 85
+# ALL_ESTIMATES = 10000
+
+DEF_AMOUNT = 2
+PERCENTAGE_OF_LIKES = 60
+ALL_ESTIMATES = 5
+
 DEF = "DEF"
 SUPPORT = "SUPPORT"
 USER = "USER"
 RFP = "RFP"
 RUPS = "RUPS"
+SUP = "SUP"
 
 ROLE_CHOICES = (
     (1, 'Пользователь'),
@@ -30,16 +41,17 @@ RATING_VALUES = (
 ACTION_TYPES = (
     (0, "Dislike"),  # user_id def_id [DONE]
     (1, "Like"),  # user_id def_id [DONE]
-    (2, "Notify update status"),
-    (3, "Status has updated"),
+    (2, "Notify update status"),  # NOT IMPLEMENT
+    (3, "Status has updated"),  # rups_id [DONE]
     (4, "Def was checked by admin"),  # def_id [DONE]
     (5, "Def was rejected by admin"),  # def_id [DONE]
     (6, "Def was published"),  # def_id [DONE]
-    (7, "Block"),  # block_id
-    (8, "Unblock by admin"),
-    (9, "Unblock (time)"),
+    (7, "Block"),  # block_id #TODO
+    (8, "Unblock by admin"),  # TODO
+    (9, "Unblock (time)"),  # TODO
     (10, "Def was added in favorites by smb"),  # user_id  def_id [DONE]
-    (11, "Support respond on the email"),  # id on request
+    (11, "Support respond on the email"), #SUP_ID [DONE]
     (12, "Request for publication"),  # user_id rfp_io [DONE]
-    (13, "Request for update status"),  # rups_id
+    (13, "Request for update status"),  # rups_id [DONE]
+    (14, "New question in support"),  #SUP_ID [DONE]
 )

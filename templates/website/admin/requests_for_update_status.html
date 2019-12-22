@@ -10,15 +10,17 @@
         {% for rup in rups %}
             <div class="jumbotron">
                 <div class="row">
-                    <div class="col-md-8">
+                    <div class="col-md-9">
                         <p>Заявка на обновление статуса пользователя <a
-                                href="{% url "website:profile" rup.user.id %}"> {{ rup.user }}</a> с рейтингом</p>
+                                href="{% url "website:profile" rup.user.id %}"> {{ rup.user }}</a> с
+                            рейтингом {{ rup.user.get_rating }}</p>
                     </div>
-                    <div class="col-md-4">
-                        <a href="#">Принять</a>
-                        <a href="#">Отклонить</a>
+                    <div class="col-md-3" style="text-align: right; font-size: 18px">
+                        <p><i>{{ rup.date_creation }}</i></p>
                     </div>
                 </div>
+                <a class="btn btn-success" href="{% url "website:update_status" rup.id "accept" %}">Принять &nbsp<i class="fa fa-check"></i></a>
+                <a class="btn btn-danger" href="{% url "website:update_status" rup.id "reject" %}">Отклонить &nbsp<i class="fa fa-close"></i></a>
             </div>
         {% endfor %}
     {% else %}
