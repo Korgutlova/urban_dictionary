@@ -41,6 +41,10 @@
                         <p class="{% is_favoured definition user %}" id="favorite{{ definition.pk }}"
                            name="{{ definition.pk }}" data-toggle="tooltip" data-placement="bottom"
                            title="Добавить в избранное"><i class=" fa fa-heart"></i></p>
+
+                        <p class="btn btn-danger" id="cancel{{ definition.pk }}"
+                           name="{{ definition.pk }}" data-placement="bottom"
+                           style="display: none; position: absolute">Отменить</p>
                     </div>
                 {% endif %}
                 <script>
@@ -51,11 +55,16 @@
                             data: {'def_id': $(this).attr('name'), 'csrfmiddlewaretoken': '{{ csrf_token }}'},
                             dataType: "json",
                             success: function (response) {
-                                if (response.colour === 'black') {
-                                    $('#favorite{{ definition.pk }}').removeClass("favoritesadded").addClass("favorites");
-                                } else {
-                                    $('#favorite{{ definition.pk }}').removeClass("favorites").addClass("favoritesadded");
-                                }
+                                {% if favorites_page %}
+                                        $('#favorite{{ definition.pk }}').hide();
+                                        $('#cancel{{ definition.pk }}').show();
+                                {%  else %}
+                                    if (response.colour === 'black') {
+                                        $('#favorite{{ definition.pk }}').removeClass("favoritesadded").addClass("favorites");
+                                    } else {
+                                        $('#favorite{{ definition.pk }}').removeClass("favorites").addClass("favoritesadded");
+                                    }
+                                {% endif %}
                             },
                             fail: function (response) {
                                 alert(response.responseText)
@@ -67,6 +76,29 @@
                         });
                     })
                 </script>
+                {% if favorites_page %}
+                    <script>
+                        $('#cancel{{ definition.pk }}').click(function () {
+                            $.ajax({
+                                type: "POST",
+                                url: "{% url 'website:favourite' %}",
+                                data: {'def_id': $(this).attr('name'), 'csrfmiddlewaretoken': '{{ csrf_token }}'},
+                                dataType: "json",
+                                success: function (response) {
+                                    $('#favorite{{ definition.pk }}').show();
+                                    $('#cancel{{ definition.pk }}').hide();
+                                },
+                                fail: function (response) {
+                                    alert(response.responseText)
+                                },
+                                error: function (rs, e) {
+                                    debugger
+                                    alert(rs.responseText);
+                                }
+                            });
+                        })
+                    </script>
+                {% endif %}
             </div>
             <h3>Описание</h3>
             <a href="{% url "website:definition" definition.id %}" style="text-decoration: none">
