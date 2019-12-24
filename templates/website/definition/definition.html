@@ -88,9 +88,9 @@
         {% endif %}
         <hr>
         {% if definition.is_publish %}
-            <button id="like{{ definition.pk }}" name="{{ definition.pk }}" class="btn btn-success"><i
+            <button id="like{{ definition.pk }}" name="{{ definition.pk }}" class="btn btn-success" {% if not user.user.is_authenticated %}disabled{% endif %}><i
                     class="fa fa-thumbs-up">&nbsp{{ definition.get_likes }}</i></button>
-            <button id="dislike{{ definition.pk }}" name="{{ definition.pk }}" class="btn btn-danger"><i
+            <button id="dislike{{ definition.pk }}" name="{{ definition.pk }}" class="btn btn-danger" {% if not user.user.is_authenticated %}disabled{% endif %}><i
                     class="fa fa-thumbs-down">&nbsp{{ definition.get_dislikes }}</i></button>
             <br>
             <br>
