@@ -61,12 +61,14 @@
                 </div>
                 {% if user.id != profile.id and user.custom_user.is_admin %}
                     {% if profile.custom_user.is_block %}
-                        <form>
+                        <form action="{% url "website:unblock" profile.id %}" method="post">
+                            {% csrf_token %}
                             <input type="submit" class="btn btn-primary" value="Разблокировать">
                         </form>
                     {% else %}
-                        <form>
-                            <input type="button" class="btn btn-danger" id="block_button" value="Блокировать">
+                        <input type="button" class="btn btn-danger" id="block_button" value="Блокировать">
+                        <form action="{% url "website:block" profile.id %}" method="post">
+                            {% csrf_token %}
                             <div style="display: none" id="content_block">
                                 <hr>
                                 <h5>Заблокировать пользователя {{ profile }}</h5>

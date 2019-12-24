@@ -5,6 +5,7 @@ from django.db import models
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 from django.template.defaultfilters import truncatechars, truncatewords
+from django.utils import timezone
 
 from website.enums import *
 
@@ -44,6 +45,19 @@ class CustomUser(models.Model):
     def is_ready_to_update(self):
         return len(self.definitions.all().exclude(
             date__isnull=True)) > DEF_AMOUNT and self.get_rating() >= ALL_ESTIMATES and self.get_ratio_lik_to_dis() >= PERCENTAGE_OF_LIKES
+
+    def is_block(self):
+        block = self.blocking.all().filter(active=True)
+        if len(block) == 0:
+            return False
+        block = block[0]
+        print(block.expiration_date)
+        print(timezone.now())
+        if block.expiration_date <= timezone.now():
+            block.active = False
+            block.save()
+            return False
+        return True
 
 
 @receiver(post_save, sender=User)

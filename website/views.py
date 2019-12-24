@@ -1,4 +1,4 @@
-import datetime
+from datetime import datetime
 import random
 import time
 import os.path
@@ -26,7 +26,7 @@ except ImportError:
 
 from website.forms import *
 from website.models import Definition, Term, CustomUser, Example, UploadData, Rating, RequestForPublication, Favorites, \
-    Notification, RequestUpdateStatus
+    Notification, RequestUpdateStatus, Blocking
 
 # Create your views here.
 from django.views import View
@@ -64,12 +64,12 @@ def ask_support(request):
                           {'questions': Support.objects.filter(answer__isnull=True).order_by("-date_creation")})
     if request.method == 'POST':
         question = Support(question=request.POST["question"], name=request.POST["name"], email=request.POST["email"],
-                           date_creation=datetime.datetime.now())
+                           date_creation=datetime.now())
         if not request.user.is_anonymous:
             question.user = request.user.custom_user
         question.save()
         for admin in CustomUser.objects.filter(role=3):
-            Notification(date_creation=datetime.datetime.now(), user=admin,
+            Notification(date_creation=datetime.now(), user=admin,
                          action_type=ACTION_TYPES[14][0],
                          models_id="%s%s" % (SUP, question.id)).save()
         return render(request, 'website/support_done.html', {'email': question.email})
@@ -96,7 +96,7 @@ def answer_support(request, pk):
                           [question.email],
                           fail_silently=False)
             if not question.user is None:
-                Notification(date_creation=datetime.datetime.now(), user=question.user,
+                Notification(date_creation=datetime.now(), user=question.user,
                              action_type=ACTION_TYPES[11][0],
                              models_id="%s%s" % (SUP, question.id)).save()
             return redirect('website:support')
@@ -172,10 +172,10 @@ def create_definition(request):
                                 author=current_user)
         definition.save()
         if current_user.is_moderator() or current_user.is_admin():
-            definition.date = datetime.datetime.now()
+            definition.date = datetime.now()
             definition.save()
         else:
-            cur_date = datetime.datetime.now()
+            cur_date = datetime.now()
             rfp = RequestForPublication(definition=definition, date_creation=cur_date)
             rfp.save()
             for admin in CustomUser.objects.filter(role=3):
@@ -222,7 +222,7 @@ def edit_definition(request, pk):
             definition.date = time.time()
             definition.save()
         else:
-            rfp.date_creation = datetime.datetime.now()
+            rfp.date_creation = datetime.now()
             rfp.status = STATUSES_FOR_REQUESTS[0][0]
             rfp.save()
 
@@ -271,20 +271,20 @@ def request_for_definition(request, pk):
         answer = request.POST["answer"]
         if answer == "approve":
             rfp.status = STATUSES_FOR_REQUESTS[2][0]
-            rfp.definition.date = datetime.datetime.now()
+            rfp.definition.date = datetime.now()
             rfp.definition.save()
-            Notification(date_creation=datetime.datetime.now(), user=rfp.definition.author,
+            Notification(date_creation=datetime.now(), user=rfp.definition.author,
                          action_type=ACTION_TYPES[6][0],
                          models_id="%s%s" % (DEF, rfp.definition.id)).save()
         else:
             if answer == "reject":
                 rfp.status = STATUSES_FOR_REQUESTS[1][0]
-                Notification(date_creation=datetime.datetime.now(), user=rfp.definition.author,
+                Notification(date_creation=datetime.now(), user=rfp.definition.author,
                              action_type=ACTION_TYPES[4][0],
                              models_id="%s%s" % (DEF, rfp.definition.id)).save()
             else:
                 rfp.status = STATUSES_FOR_REQUESTS[3][0]
-                Notification(date_creation=datetime.datetime.now(), user=rfp.definition.author,
+                Notification(date_creation=datetime.now(), user=rfp.definition.author,
                              action_type=ACTION_TYPES[5][0],
                              models_id="%s%s" % (DEF, rfp.definition.id)).save()
             rfp.reason = request.POST["reason"]
@@ -349,13 +349,13 @@ def like(request):
             defin.estimates.get(user=user).delete()
             Rating(definition=defin, user=user, estimate=1).save()
             if defin.author.id != user.id:
-                Notification(date_creation=datetime.datetime.now(), action_type=ACTION_TYPES[1][0], user=defin.author,
+                Notification(date_creation=datetime.now(), action_type=ACTION_TYPES[1][0], user=defin.author,
                              models_id="%s%s %s%s" % (USER, user.id, DEF, defin.id)).save()
         else:
             # add a new like for a company
             Rating(definition=defin, user=user, estimate=1).save()
             if defin.author.id != user.id:
-                Notification(date_creation=datetime.datetime.now(), action_type=ACTION_TYPES[1][0], user=defin.author,
+                Notification(date_creation=datetime.now(), action_type=ACTION_TYPES[1][0], user=defin.author,
                              models_id="%s%s %s%s" % (USER, user.id, DEF, defin.id)).save()
 
         ctx = {'likes_count': defin.get_likes(), 'dislikes_count': defin.get_dislikes()}
@@ -377,14 +377,14 @@ def dislike(request):
         elif defin.estimates.filter(user=user, estimate=1).exists():
             defin.estimates.get(user=user).delete()
             if defin.author.id != user.id:
-                Notification(date_creation=datetime.datetime.now(), user=defin.author,
+                Notification(date_creation=datetime.now(), user=defin.author,
                              models_id="%s%s %s%s" % (USER, user.id, DEF, defin.id)).save()
             Rating(definition=defin, user=user, estimate=0).save()
         else:
             # add a new like for a company
             Rating(definition=defin, user=user, estimate=0).save()
             if defin.author.id != user.id:
-                Notification(date_creation=datetime.datetime.now(), user=defin.author,
+                Notification(date_creation=datetime.now(), user=defin.author,
                              models_id="%s%s %s%s" % (USER, user.id, DEF, defin.id)).save()
 
         ctx = {'dislikes_count': defin.get_dislikes(), 'likes_count': defin.get_likes()}
@@ -404,7 +404,7 @@ def favourite(request):
         else:
             Favorites(definition=defin, user=user).save()
             if defin.author.id != user.id:
-                Notification(date_creation=datetime.datetime.now(), user=defin.author, action_type=ACTION_TYPES[10][0],
+                Notification(date_creation=datetime.now(), user=defin.author, action_type=ACTION_TYPES[10][0],
                              models_id="%s%s %s%s" % (USER, user.id, DEF, defin.id)).save()
             colour = 'red'
 
@@ -460,10 +460,10 @@ def notifications(request):
 
 def create_request_for_update_status(request):
     user = request.user.custom_user
-    rup = RequestUpdateStatus(date_creation=datetime.datetime.now(), user=user)
+    rup = RequestUpdateStatus(date_creation=datetime.now(), user=user)
     rup.save()
     for admin in CustomUser.objects.filter(role=3):
-        Notification(date_creation=datetime.datetime.now(), user=admin, action_type=ACTION_TYPES[13][0],
+        Notification(date_creation=datetime.now(), user=admin, action_type=ACTION_TYPES[13][0],
                      models_id="%s%s" % (RUPS, rup.id)).save()
     return redirect('website:profile', pk=user.id)
 
@@ -479,7 +479,7 @@ def update_status(request, pk, answer):
     else:
         rup.status = 2
         rup.save()
-    Notification(date_creation=datetime.datetime.now(), user=rup.user, action_type=ACTION_TYPES[3][0],
+    Notification(date_creation=datetime.now(), user=rup.user, action_type=ACTION_TYPES[3][0],
                  models_id="%s%s" % (RUPS, rup.id)).save()
     return redirect("website:requests_for_update_status")
 
@@ -487,3 +487,21 @@ def update_status(request, pk, answer):
 def requests_for_update_status(request):
     return render(request, "website/admin/requests_for_update_status.html",
                   {"rups": RequestUpdateStatus.objects.filter(status=1)})
+
+
+def block(request, pk):
+    blocked_user = CustomUser.objects.get(pk=pk)
+    Blocking(user=blocked_user, reason=request.POST["reason"], date_creation=datetime.now(),
+             expiration_date=request.POST["date"]).save()
+    update_session_auth_hash(request, blocked_user)
+    # TODO SEND EMAIL
+    return redirect('website:profile', pk=blocked_user.id)
+
+
+def unblock(request, pk):
+    unblocked_user = CustomUser.objects.get(pk=pk)
+    blocking = unblocked_user.blocking.all().filter(active=True)[0]
+    blocking.active = False
+    blocking.save()
+    # TODO SEND EMAIL
+    return redirect('website:profile', pk=unblocked_user.id)

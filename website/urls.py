@@ -30,5 +30,7 @@ urlpatterns = [
     path(r'create_request_for_update_status', create_request_for_update_status,
          name='create_request_for_update_status'),
     path(r'support/', ask_support, name='support'),
-    path(r'support/<int:pk>', answer_support, name='answer_support')
+    path(r'support/<int:pk>', answer_support, name='answer_support'),
+    path(r'block/<int:pk>', block, name='block'),
+    path(r'unblock/<int:pk>', unblock, name='unblock')
 ]

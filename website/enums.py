@@ -46,9 +46,9 @@ ACTION_TYPES = (
     (4, "Def was checked by admin"),  # def_id [DONE]
     (5, "Def was rejected by admin"),  # def_id [DONE]
     (6, "Def was published"),  # def_id [DONE]
-    (7, "Block"),  # block_id #TODO
-    (8, "Unblock by admin"),  # TODO
-    (9, "Unblock (time)"),  # TODO
+    (7, "Block"),  # NOT IMPLEMENT, SEND EMAIL [DONE]
+    (8, "Unblock by admin"),  # NOT IMPLEMENT, SEND EMAIL [DONE]
+    (9, "Unblock (time)"),  # NOT IMPLEMENT, SEND EMAIL [DONE]
     (10, "Def was added in favorites by smb"),  # user_id  def_id [DONE]
     (11, "Support respond on the email"),  # SUP_ID [DONE]
     (12, "Request for publication"),  # user_id rfp_io [DONE]
