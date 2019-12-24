@@ -334,6 +334,7 @@ class TermView(View):
 
 
 @require_POST
+@login_required
 def like(request):
     if request.method == 'POST':
         user = request.user.custom_user
@@ -362,6 +363,7 @@ def like(request):
         return HttpResponse(json.dumps(ctx), content_type='application/json')
 
 
+@login_required
 def dislike(request):
     if request.method == 'POST':
         user = request.user.custom_user
@@ -390,6 +392,7 @@ def dislike(request):
         return HttpResponse(json.dumps(ctx), content_type='application/json')
 
 
+@login_required
 def favourite(request):
     if request.method == 'POST':
         user = request.user.custom_user
