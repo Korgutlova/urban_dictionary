@@ -50,8 +50,8 @@ ACTION_TYPES = (
     (8, "Unblock by admin"),  # TODO
     (9, "Unblock (time)"),  # TODO
     (10, "Def was added in favorites by smb"),  # user_id  def_id [DONE]
-    (11, "Support respond on the email"), #SUP_ID [DONE]
+    (11, "Support respond on the email"),  # SUP_ID [DONE]
     (12, "Request for publication"),  # user_id rfp_io [DONE]
     (13, "Request for update status"),  # rups_id [DONE]
-    (14, "New question in support"),  #SUP_ID [DONE]
+    (14, "New question in support"),  # SUP_ID [DONE]
 )

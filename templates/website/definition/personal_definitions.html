@@ -85,9 +85,9 @@
             </div>
             <hr>
             {% if definition.is_publish %}
-                <button id="like{{ definition.pk }}" name="{{ definition.pk }}" class="btn btn-success"><i
+                <button {% if not user.is_authenticated %} disabled {% endif %} id="like{{ definition.pk }}" name="{{ definition.pk }}" class="btn btn-success"><i
                         class="fa fa-thumbs-up">&nbsp{{ definition.get_likes }}</i></button>
-                <button id="dislike{{ definition.pk }}" name="{{ definition.pk }}" class="btn btn-danger"><i
+                <button {% if not user.is_authenticated %} disabled {% endif %} id="dislike{{ definition.pk }}" name="{{ definition.pk }}" class="btn btn-danger"><i
                         class="fa fa-thumbs-down">&nbsp{{ definition.get_dislikes }}</i></button>
                 <br>
                 <br>

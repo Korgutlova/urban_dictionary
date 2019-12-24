@@ -196,11 +196,12 @@ class Rating(models.Model):
 
 
 class Blocking(models.Model):
-    user = models.OneToOneField(CustomUser, related_name='blocking', on_delete=models.CASCADE,
-                                blank=False, null=False, verbose_name='Пользователь')
+    user = models.ForeignKey(CustomUser, related_name='blocking', on_delete=models.CASCADE,
+                             blank=False, null=False, verbose_name='Пользователь')
     reason = models.TextField(verbose_name="Причина блокировки", blank=False)
     date_creation = models.DateTimeField(auto_now_add=True, blank=False, verbose_name="Дата создания блокировки")
     expiration_date = models.DateTimeField(blank=True, null=True, verbose_name="Дата истекания блокировки")
+    active = models.BooleanField(blank=False, null=False, default=True, verbose_name="Активная ")
 
     def __str__(self):
         return "Блокировка пользователя %s" % self.user
