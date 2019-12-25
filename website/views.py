@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, timedelta
 import random
 import time
 import os.path
@@ -18,6 +18,7 @@ from django.core.mail import send_mail
 
 from website.enums import STATUSES_FOR_REQUESTS, ACTION_TYPES, USER, DEF, RFP, RUPS, SUP
 from urban_dictionary.settings import EMAIL_HOST_USER
+from website.tasks import unblock_user
 
 try:
     from django.utils import simplejson as json
@@ -517,7 +518,8 @@ def block(request, pk):
                       EMAIL_HOST_USER,
                       [blocked_user.email],
                       fail_silently=False)
-
+        unblock_user(pk, schedule=datetime.strptime(blocking.expiration_date, "%Y-%m-%dT%H:%M"), repeat=60,
+                     repeat_until=(datetime.strptime(blocking.expiration_date, "%Y-%m-%dT%H:%M") + timedelta(days=1)))
         return redirect('website:profile', pk=blocked_user.id)
     raise Http404()
 
