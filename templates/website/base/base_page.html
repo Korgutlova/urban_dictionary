@@ -50,12 +50,12 @@
                     <li class="nav-item horizontal first">
                         <a class="nav-link" href="/">Определения</a>
                     </li>
+                    <li class="nav-item horizontal">
+                            <a class="nav-link" href="{% url "website:favourites_list" %}">Избранное</a>
+                        </li>
                     {% if not user.custom_user.is_admin %}
                         <li class="nav-item horizontal">
                             <a class="nav-link" href="{% url "website:personal_definitions" %}">Мои определения</a>
-                        </li>
-                        <li class="nav-item horizontal">
-                            <a class="nav-link" href="{% url "website:favourites_list" %}">Избранное</a>
                         </li>
                     {% endif %}
                     <li class="nav-item horizontal">

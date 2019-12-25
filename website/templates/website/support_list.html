@@ -11,12 +11,15 @@
             <a href="{% url 'website:answer_support' question.id %}" style="text-decoration: none">
                 <div class="jumbotron">
                     <div class="row">
-                        <div class="col-md-9 truncate">
+                        <div class="col-md-6 truncate">
                             {{ forloop.counter }})
                             &nbsp {{ question.question }}
                         </div>
                         <div class="col-md-3">
                             {{ question.name }}
+                        </div>
+                        <div class="col-md-3">
+                            {{ question.date_creation }}
                         </div>
                     </div>
                 </div>

@@ -497,8 +497,8 @@ def requests_for_update_status(request):
 @login_required
 def block(request, pk):
     if request.user.custom_user.is_admin():
-        blocked_user = CustomUser.objects.get(pk=pk)
-        blocking = Blocking(user=blocked_user, reason=request.POST["reason"], date_creation=datetime.now(),
+        blocked_user = User.objects.get(pk=pk)
+        blocking = Blocking(user=blocked_user.custom_user, reason=request.POST["reason"], date_creation=datetime.now(),
                             expiration_date=request.POST["date"])
         blocking.save()
         update_session_auth_hash(request, blocked_user)
@@ -506,9 +506,9 @@ def block(request, pk):
         BASE = os.path.dirname(os.path.abspath(__file__))
         with open(os.path.join(BASE, "block_mail.txt"), 'r', encoding="utf-8") as support_mail:
             email_text = support_mail.read() \
-                .replace("user_a93a04d13d4efbf11caf76339de7b435", blocked_user.user.username) \
+                .replace("user_a93a04d13d4efbf11caf76339de7b435", blocked_user.username) \
                 .replace("reason_bfffaf3d25520b20dabb1dd7ab2f615f", blocking.reason) \
-                .replace("date_494deb546d18a9e9dd16f28ea9e41bfd", blocking.expiration_date)
+                .replace("date_494deb546d18a9e9dd16f28ea9e41bfd", blocking.expiration_date.strftime("%d-%b-%Y (%H:%M)"))
             send_mail('Блокировка на платформе {}'.format(request.META['HTTP_HOST']),
                       email_text,
                       EMAIL_HOST_USER,
@@ -522,15 +522,15 @@ def block(request, pk):
 @login_required
 def unblock(request, pk):
     if request.user.custom_user.is_admin():
-        unblocked_user = CustomUser.objects.get(pk=pk)
-        blocking = unblocked_user.blocking.all().filter(active=True)[0]
+        unblocked_user = User.objects.get(pk=pk)
+        blocking = unblocked_user.custom_user.blocking.all().filter(active=True)[0]
         blocking.active = False
         blocking.save()
 
         BASE = os.path.dirname(os.path.abspath(__file__))
         with open(os.path.join(BASE, "unblock_mail.txt"), 'r', encoding="utf-8") as support_mail:
             email_text = support_mail.read() \
-                .replace("user_a93a04d13d4efbf11caf76339de7b435", unblocked_user.user.username)
+                .replace("user_a93a04d13d4efbf11caf76339de7b435", unblocked_user.username)
             send_mail('Разблокировка на платформе {}'.format(request.META['HTTP_HOST']),
                       email_text,
                       EMAIL_HOST_USER,
