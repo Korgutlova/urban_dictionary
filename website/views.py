@@ -149,6 +149,8 @@ class UserDetailView(View):
 
     def get(self, request, pk):
         profile = get_object_or_404(User, pk=pk)
+        if profile.custom_user.is_block() and not request.user.custom_user.is_admin():
+            return redirect("website:page_not_found")
         user_definitions = Definition.objects.filter(author_id__exact=pk)
         user_rating = str(sum(map(lambda x: x.get_likes() - x.get_dislikes(), user_definitions)))
         definition_number = Definition.objects.filter(author_id__exact=pk).count()
@@ -190,7 +192,6 @@ def create_definition(request):
         for f, h in zip(request.FILES.getlist("upload_data"), request.POST.getlist("header")):
             link_file = "%s/%s/%s.%s" % (
                 definition.author.id, definition.id, int(time.time() * 1000), f.name.split(".")[1])
-            print(link_file)
             fs = FileSystemStorage()
             filename = fs.save(link_file, f)
             u = UploadData(header_for_file=h, definition=definition, image=filename)
@@ -229,7 +230,6 @@ def edit_definition(request, pk):
         old_examples = list(definition.examples.all())
         examples = request.POST.getlist("examples")
         primary = int(request.POST.get("primary"))
-        print(primary)
         for i, ex in enumerate(examples):
             cur_examples = Example.objects.filter(example=ex, definition=definition)
             if len(cur_examples) > 0:
@@ -252,7 +252,6 @@ def edit_definition(request, pk):
         for f, h in zip(request.FILES.getlist("upload_data"), request.POST.getlist("header")):
             link_file = "%s/%s/%s.%s" % (
                 definition.author.id, definition.id, int(time.time() * 1000), f.name.split(".")[1])
-            print(link_file)
             fs = FileSystemStorage()
             filename = fs.save(link_file, f)
             u = UploadData(header_for_file=h, definition=definition, image=filename)
@@ -491,10 +490,23 @@ def requests_for_update_status(request):
 
 def block(request, pk):
     blocked_user = CustomUser.objects.get(pk=pk)
-    Blocking(user=blocked_user, reason=request.POST["reason"], date_creation=datetime.now(),
-             expiration_date=request.POST["date"]).save()
+    blocking = Blocking(user=blocked_user, reason=request.POST["reason"], date_creation=datetime.now(),
+                        expiration_date=request.POST["date"])
+    blocking.save()
     update_session_auth_hash(request, blocked_user)
-    # TODO SEND EMAIL
+
+    BASE = os.path.dirname(os.path.abspath(__file__))
+    with open(os.path.join(BASE, "block_mail.txt"), 'r', encoding="utf-8") as support_mail:
+        email_text = support_mail.read() \
+            .replace("user_a93a04d13d4efbf11caf76339de7b435", blocked_user.user.username) \
+            .replace("reason_bfffaf3d25520b20dabb1dd7ab2f615f", blocking.reason) \
+            .replace("date_494deb546d18a9e9dd16f28ea9e41bfd", blocking.expiration_date)
+        send_mail('Блокировка на платформе {}'.format(request.META['HTTP_HOST']),
+                  email_text,
+                  EMAIL_HOST_USER,
+                  [blocked_user.email],
+                  fail_silently=False)
+
     return redirect('website:profile', pk=blocked_user.id)
 
 
@@ -503,5 +515,15 @@ def unblock(request, pk):
     blocking = unblocked_user.blocking.all().filter(active=True)[0]
     blocking.active = False
     blocking.save()
-    # TODO SEND EMAIL
+
+    BASE = os.path.dirname(os.path.abspath(__file__))
+    with open(os.path.join(BASE, "unblock_mail.txt"), 'r', encoding="utf-8") as support_mail:
+        email_text = support_mail.read() \
+            .replace("user_a93a04d13d4efbf11caf76339de7b435", unblocked_user.user.username)
+        send_mail('Разблокировка на платформе {}'.format(request.META['HTTP_HOST']),
+                  email_text,
+                  EMAIL_HOST_USER,
+                  [unblocked_user.email],
+                  fail_silently=False)
+
     return redirect('website:profile', pk=unblocked_user.id)

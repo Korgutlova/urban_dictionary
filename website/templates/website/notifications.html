@@ -11,8 +11,10 @@
             <div class="row">
                 <div class="col-md-9">
                     {% if notif.action_type == 0 %}
-                        <p>Пользователь <a
-                                href="{% url "website:profile" notif.get_user.id %}"> {{ notif.get_user }}</a>
+                        <p>Пользователь {% if notif.get_user.is_block %}{{ notif.get_user }}
+                        {% else %}<a
+                                    href="{% url "website:profile" notif.get_user.id %}"> {{ notif.get_user }}</a>
+                        {% endif %}
                             поставил Вам дизлайк на определение <a
                                     href="{% url "website:definition" notif.get_def.id %}">
                                 {{ notif.get_def.term.name }}</a>
@@ -21,8 +23,10 @@
                         {# ==============================================================================================  #}
 
                     {% elif  notif.action_type == 1 %}
-                        <p>Пользователь <a
-                                href="{% url "website:profile" notif.get_user.id %}"> {{ notif.get_user }}</a>
+                        <p>Пользователь {% if notif.get_user.is_block %}{{ notif.get_user }}
+                        {% else %} <a
+                                    href="{% url "website:profile" notif.get_user.id %}"> {{ notif.get_user }}</a>
+                        {% endif %}
                             поставил Вам лайк на определение <a href="{% url "website:definition" notif.get_def.id %}">
                                 {{ notif.get_def.term.name }}</a>
                         </p>
@@ -94,9 +98,14 @@
                         {# ==============================================================================================  #}
 
                     {% elif  notif.action_type == 10 %}
-                        <p>Пользователь<a href="{% url "website:profile" notif.get_user.id %}">
-                            {{ notif.get_user }}</a> добавил в <i style="color: red">избранное</i> вашу статью <a
-                                href="{% url "website:definition" notif.get_def.id %}">{{ notif.get_def.term.name }}</a>
+                        <p>Пользователь
+                            {% if notif.get_user.is_block %}
+                                {{ notif.get_user }}
+                            {% else %}
+                                <a href="{% url "website:profile" notif.get_user.id %}">{{ notif.get_user }}</a>
+                            {% endif %}
+                            добавил в <i style="color: red">избранное</i> вашу статью <a
+                                    href="{% url "website:definition" notif.get_def.id %}">{{ notif.get_def.term.name }}</a>
                         </p>
 
                         {# ==============================================================================================  #}
@@ -110,16 +119,23 @@
                         {# ==============================================================================================  #}
 
                     {% elif  notif.action_type == 12 %}
-                        <p>Пользователь <a href="{% url "website:profile" notif.get_user.id %}">
-                            {{ notif.get_user }}</a> отправил определение <a
-                                href="{% url "website:request_for_definition" notif.get_rfp.id %}">
-                            {{ notif.get_rfp.definition.term.name }}</a> на публкацию</p>
+                        <p>Пользователь {% if notif.get_user.is_block %}
+                            {{ notif.get_user }}
+                        {% else %}
+                            <a href="{% url "website:profile" notif.get_user.id %}">{{ notif.get_user }}</a>
+                        {% endif %}
+                            отправил определение <a
+                                    href="{% url "website:request_for_definition" notif.get_rfp.id %}">
+                                {{ notif.get_rfp.definition.term.name }}</a> на публкацию</p>
 
                         {# ==============================================================================================  #}
 
                     {% elif  notif.action_type == 13 %}
-                        <p>Пользователь <a
-                                href="{% url "website:profile" notif.get_rups.user.id %}">{{ notif.get_rups.user }}</a>
+                        <p>Пользователь {% if notif.get_rups.user.is_block %}
+                            {{ notif.get_rups.user}}
+                        {% else %}
+                            <a href="{% url "website:profile" notif.get_rups.user.id %}">{{ notif.get_rups.user }}</a>
+                        {% endif %}
                             отправил запрос на повышение статуса до модератора определений
                         </p>
 
