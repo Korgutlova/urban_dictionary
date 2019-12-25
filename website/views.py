@@ -205,7 +205,6 @@ def create_definition(request):
 
 @login_required
 def edit_definition(request, pk):
-    print("!!!")
     definition = Definition.objects.get(id=pk)
     current_user = request.user.custom_user
     if definition.author != current_user:

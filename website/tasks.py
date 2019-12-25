@@ -9,6 +9,7 @@ from django_registration.forms import User
 
 from urban_dictionary.settings import EMAIL_HOST_USER
 
+# manage.py process_tasks
 
 @background
 def unblock_user(user_id):
