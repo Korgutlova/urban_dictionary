@@ -16,7 +16,7 @@
                     <a href={% url 'website:term' definition.term.id %}><h3>{{ definition.term.name }}</h3></a>
                     {% if user.custom_user == definition.author %}
                         <p>Статус статьи - {% if definition.is_publish %}
-                            <i style="color: green">Опубликовано</i>bc
+                            <i style="color: green">Опубликовано</i>
                         {% else %}
                             {% if  definition.get_cur_status == 1 %}
                                 <i style="color: #0a1cff">На рассмотрении </i>

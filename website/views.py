@@ -204,14 +204,14 @@ def create_definition(request):
 
 @login_required
 def edit_definition(request, pk):
+    print("!!!")
     definition = Definition.objects.get(id=pk)
     current_user = request.user.custom_user
     if definition.author != current_user:
         raise Http404()
     rfp = RequestForPublication.objects.get(definition=definition)
     if request.method == "POST":
-        # TO DO
-        # NEED TO CHECK
+
         term = Term.objects.filter(name=request.POST["name"]).first()
         if term is None:
             term = Term(name=request.POST["name"])
@@ -222,7 +222,7 @@ def edit_definition(request, pk):
         definition.date = None
         definition.save()
         if current_user.is_moderator() or current_user.is_admin():
-            definition.date = time.time()
+            definition.date = datetime.now()
             definition.save()
         else:
             rfp.date_creation = datetime.now()
@@ -249,8 +249,7 @@ def edit_definition(request, pk):
         for ex in old_examples:
             ex.delete()
 
-        for file in definition.files.all():
-            file.delete()
+        print(request.POST)
         for f, h in zip(request.FILES.getlist("upload_data"), request.POST.getlist("header")):
             link_file = "%s/%s/%s.%s" % (
                 definition.author.id, definition.id, int(time.time() * 1000), f.name.split(".")[1])
@@ -539,4 +538,14 @@ def unblock(request, pk):
                       fail_silently=False)
 
         return redirect('website:profile', pk=unblocked_user.id)
+    raise Http404()
+
+
+@login_required
+def drop_file(request):
+    print("check")
+    file = UploadData.objects.get(pk=request.POST.get('file_id', None))
+    if file.definition.author == request.user.custom_user:
+        file.delete()
+        return HttpResponse(json.dumps({}), content_type='application/json')
     raise Http404()

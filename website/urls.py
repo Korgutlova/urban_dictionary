@@ -31,5 +31,6 @@ urlpatterns = [
     path(r'support/', ask_support, name='support'),
     path(r'support/<int:pk>', answer_support, name='answer_support'),
     path(r'block/<int:pk>', block, name='block'),
-    path(r'unblock/<int:pk>', unblock, name='unblock')
+    path(r'unblock/<int:pk>', unblock, name='unblock'),
+    path(r'drop_file', drop_file, name='drop_file')
 ]
