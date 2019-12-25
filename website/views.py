@@ -391,6 +391,7 @@ def dislike(request):
         return HttpResponse(json.dumps(ctx), content_type='application/json')
 
 
+@login_required
 def favourite(request):
     if request.method == 'POST':
         user = request.user.custom_user
