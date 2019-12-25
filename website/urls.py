@@ -17,7 +17,6 @@ urlpatterns = [
     path(r'definition/edit/<int:pk>', edit_definition, name='edit_definition'),
     path(r'definition/check/<int:pk>', request_for_definition, name='request_for_definition'),
     path(r'requests_update_status/', requests_for_update_status, name='requests_for_update_status'),
-    path(r'page_not_found/', page_not_found, name='page_not_found'),
     path(r'definition/like', like, name='like'),
     path(r'definition/dislike', dislike, name='dislike'),
     path(r'favourite/', favourite, name='favourite'),

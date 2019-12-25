@@ -10,7 +10,7 @@ from django.contrib.auth.forms import PasswordChangeForm
 from django.core.files.storage import FileSystemStorage
 from django.db import transaction
 from django.db.models import Q
-from django.http import HttpResponse, HttpResponseRedirect
+from django.http import HttpResponse, HttpResponseRedirect, Http404
 from django.shortcuts import render, redirect, get_object_or_404, render_to_response
 from django.views.decorators.http import require_POST
 from django_registration.forms import User
@@ -28,7 +28,6 @@ from website.forms import *
 from website.models import Definition, Term, CustomUser, Example, UploadData, Rating, RequestForPublication, Favorites, \
     Notification, RequestUpdateStatus, Blocking
 
-# Create your views here.
 from django.views import View
 from django.views.generic import ListView, DetailView
 
@@ -149,8 +148,11 @@ class UserDetailView(View):
 
     def get(self, request, pk):
         profile = get_object_or_404(User, pk=pk)
-        if profile.custom_user.is_block() and not request.user.custom_user.is_admin():
-            return redirect("website:page_not_found")
+        if profile.custom_user.is_block():
+            if request.user.is_anonymous:
+                raise Http404()
+            if not request.user.custom_user.is_admin():
+                raise Http404()
         user_definitions = Definition.objects.filter(author_id__exact=pk)
         user_rating = str(sum(map(lambda x: x.get_likes() - x.get_dislikes(), user_definitions)))
         definition_number = Definition.objects.filter(author_id__exact=pk).count()
@@ -205,7 +207,7 @@ def edit_definition(request, pk):
     definition = Definition.objects.get(id=pk)
     current_user = request.user.custom_user
     if definition.author != current_user:
-        return redirect("website:page_not_found")
+        raise Http404()
     rfp = RequestForPublication.objects.get(definition=definition)
     if request.method == "POST":
         # TO DO
@@ -265,7 +267,7 @@ def request_for_definition(request, pk):
     current_user = CustomUser.objects.get(user=request.user)
     rfp = get_object_or_404(RequestForPublication, pk=pk)
     if not current_user.is_admin() or not rfp.is_new():
-        return redirect("website:page_not_found")
+        raise Http404()
     if request.method == 'POST':
         answer = request.POST["answer"]
         if answer == "approve":
@@ -293,16 +295,12 @@ def request_for_definition(request, pk):
     return render(request, "website/admin/admin_definition_check.html", {"rfp": rfp})
 
 
-def page_not_found(request):
-    return render(request, "website/base/page_not_found.html", )
-
-
 def definition(request, pk):
     try:
         definition = Definition.objects.get(id=pk)
         return render(request, "website/definition/definition.html", {"definition": definition})
     except:
-        return redirect("website:page_not_found")
+        raise Http404()
 
 
 def user_definitions(request, pk):
@@ -315,13 +313,12 @@ def user_definitions(request, pk):
         return redirect('website:personal_definitions')
 
 
+@login_required
 def personal_definitions(request):
-    if request.user.is_authenticated:
-        current_user = request.user.custom_user
-        return render(request, "website/definition/personal_definitions.html",
-                      {"definitions": Definition.objects.filter(author=current_user),
-                       'target_user': current_user})
-    return redirect("website:page_not_found")
+    current_user = request.user.custom_user
+    return render(request, "website/definition/personal_definitions.html",
+                  {"definitions": Definition.objects.filter(author=current_user),
+                   'target_user': current_user})
 
 
 class TermView(View):
@@ -437,18 +434,20 @@ def search(request):
         return render(request, 'website/main_page.html',
                       {'definitions': object_list, 'search_page': True})
     else:
-        return redirect("website:page_not_found")
+        raise Http404()
 
 
+@login_required
 def requests_pub(request):
     user = request.user.custom_user
     if user.is_admin():
         return render(request, 'website/admin/requests_for_publication.html',
                       {'rfps': RequestForPublication.objects.order_by(
                           "-date_creation").filter(status=STATUSES_FOR_REQUESTS[0][0])})
-    return redirect("website:page_not_found")
+    raise Http404()
 
 
+@login_required
 def notifications(request):
     user = request.user.custom_user
     notifs = user.notifications.all().order_by("-date_creation")
@@ -458,6 +457,7 @@ def notifications(request):
     return render(request, "website/notifications.html", {"notifications": notifs})
 
 
+@login_required
 def create_request_for_update_status(request):
     user = request.user.custom_user
     rup = RequestUpdateStatus(date_creation=datetime.now(), user=user)
@@ -468,63 +468,75 @@ def create_request_for_update_status(request):
     return redirect('website:profile', pk=user.id)
 
 
+@login_required
 def update_status(request, pk, answer):
-    rup = RequestUpdateStatus.objects.get(pk=pk)
-    if answer == "accept":
-        rup.status = 3
-        rup.save()
-        user = rup.user
-        user.role = 2
-        user.save()
-    else:
-        rup.status = 2
-        rup.save()
-    Notification(date_creation=datetime.now(), user=rup.user, action_type=ACTION_TYPES[3][0],
-                 models_id="%s%s" % (RUPS, rup.id)).save()
-    return redirect("website:requests_for_update_status")
+    if request.user.custom_user.is_admin():
+        rup = RequestUpdateStatus.objects.get(pk=pk)
+        if answer == "accept":
+            rup.status = 3
+            rup.save()
+            user = rup.user
+            user.role = 2
+            user.save()
+        else:
+            rup.status = 2
+            rup.save()
+        Notification(date_creation=datetime.now(), user=rup.user, action_type=ACTION_TYPES[3][0],
+                     models_id="%s%s" % (RUPS, rup.id)).save()
+        return redirect("website:requests_for_update_status")
+    raise Http404()
 
 
+@login_required
 def requests_for_update_status(request):
-    return render(request, "website/admin/requests_for_update_status.html",
-                  {"rups": RequestUpdateStatus.objects.filter(status=1)})
+    if request.user.custom_user.is_admin():
+        return render(request, "website/admin/requests_for_update_status.html",
+                      {"rups": RequestUpdateStatus.objects.filter(status=1)})
+    raise Http404()
 
 
+@login_required
 def block(request, pk):
-    blocked_user = CustomUser.objects.get(pk=pk)
-    blocking = Blocking(user=blocked_user, reason=request.POST["reason"], date_creation=datetime.now(),
-                        expiration_date=request.POST["date"])
-    blocking.save()
-    update_session_auth_hash(request, blocked_user)
+    if request.user.custom_user.is_admin():
+        blocked_user = CustomUser.objects.get(pk=pk)
+        blocking = Blocking(user=blocked_user, reason=request.POST["reason"], date_creation=datetime.now(),
+                            expiration_date=request.POST["date"])
+        blocking.save()
+        update_session_auth_hash(request, blocked_user)
 
-    BASE = os.path.dirname(os.path.abspath(__file__))
-    with open(os.path.join(BASE, "block_mail.txt"), 'r', encoding="utf-8") as support_mail:
-        email_text = support_mail.read() \
-            .replace("user_a93a04d13d4efbf11caf76339de7b435", blocked_user.user.username) \
-            .replace("reason_bfffaf3d25520b20dabb1dd7ab2f615f", blocking.reason) \
-            .replace("date_494deb546d18a9e9dd16f28ea9e41bfd", blocking.expiration_date)
-        send_mail('Блокировка на платформе {}'.format(request.META['HTTP_HOST']),
-                  email_text,
-                  EMAIL_HOST_USER,
-                  [blocked_user.email],
-                  fail_silently=False)
+        BASE = os.path.dirname(os.path.abspath(__file__))
+        with open(os.path.join(BASE, "block_mail.txt"), 'r', encoding="utf-8") as support_mail:
+            email_text = support_mail.read() \
+                .replace("user_a93a04d13d4efbf11caf76339de7b435", blocked_user.user.username) \
+                .replace("reason_bfffaf3d25520b20dabb1dd7ab2f615f", blocking.reason) \
+                .replace("date_494deb546d18a9e9dd16f28ea9e41bfd", blocking.expiration_date)
+            send_mail('Блокировка на платформе {}'.format(request.META['HTTP_HOST']),
+                      email_text,
+                      EMAIL_HOST_USER,
+                      [blocked_user.email],
+                      fail_silently=False)
 
-    return redirect('website:profile', pk=blocked_user.id)
+        return redirect('website:profile', pk=blocked_user.id)
+    raise Http404()
 
 
+@login_required
 def unblock(request, pk):
-    unblocked_user = CustomUser.objects.get(pk=pk)
-    blocking = unblocked_user.blocking.all().filter(active=True)[0]
-    blocking.active = False
-    blocking.save()
+    if request.user.custom_user.is_admin():
+        unblocked_user = CustomUser.objects.get(pk=pk)
+        blocking = unblocked_user.blocking.all().filter(active=True)[0]
+        blocking.active = False
+        blocking.save()
 
-    BASE = os.path.dirname(os.path.abspath(__file__))
-    with open(os.path.join(BASE, "unblock_mail.txt"), 'r', encoding="utf-8") as support_mail:
-        email_text = support_mail.read() \
-            .replace("user_a93a04d13d4efbf11caf76339de7b435", unblocked_user.user.username)
-        send_mail('Разблокировка на платформе {}'.format(request.META['HTTP_HOST']),
-                  email_text,
-                  EMAIL_HOST_USER,
-                  [unblocked_user.email],
-                  fail_silently=False)
+        BASE = os.path.dirname(os.path.abspath(__file__))
+        with open(os.path.join(BASE, "unblock_mail.txt"), 'r', encoding="utf-8") as support_mail:
+            email_text = support_mail.read() \
+                .replace("user_a93a04d13d4efbf11caf76339de7b435", unblocked_user.user.username)
+            send_mail('Разблокировка на платформе {}'.format(request.META['HTTP_HOST']),
+                      email_text,
+                      EMAIL_HOST_USER,
+                      [unblocked_user.email],
+                      fail_silently=False)
 
-    return redirect('website:profile', pk=unblocked_user.id)
+        return redirect('website:profile', pk=unblocked_user.id)
+    raise Http404()
