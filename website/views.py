@@ -34,11 +34,14 @@ from website.models import Definition, CustomUser, Example, UploadData, Rating, 
 def main_page(request):
     return render(request, 'website/main_page.html',
                   {'definitions': Definition.get_top_for_week, 'popular_for_week': True})
-    # {'definitions': Definition.objects.all})
 
 
 def custom_handler404(request, exception, template_name="page_not_found.html"):
     return render(request, 'website/base/page_not_found.html', {}, status=404)
+
+
+def custom_handler500(request):
+    return render(request, 'website/base/server_error.html', {}, status=500)
 
 
 @login_required
