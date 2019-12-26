@@ -125,3 +125,10 @@ img.profile_thumbnail {
     overflow: hidden;
     text-overflow: ellipsis;
 }
+
+.img-error-center {
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+    width: 50%;
+}
