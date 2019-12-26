@@ -113,6 +113,15 @@
                         success: function (response) {
                             $('#like{{ definition.pk }}').html("<i class=\"fa fa-thumbs-up\">&nbsp" + response.likes_count + "</i>");
                             $('#dislike{{ definition.pk }}').html("<i class=\"fa fa-thumbs-down\">&nbsp" + response.dislikes_count + "</i>");
+                            $("#like{{ definition.pk }}").removeClass();
+                            $("#dislike{{ definition.pk }}").removeClass();
+                            if (response.is_liked) {
+                                $("#like{{ definition.pk }}").addClass("btn btn-success");
+                                $("#dislike{{ definition.pk }}").addClass("btn btn-outline-danger");
+                            } else {
+                                $("#like{{ definition.pk }}").addClass("btn btn-outline-success");
+                                $("#dislike{{ definition.pk }}").addClass("btn btn-outline-danger");
+                            }
                         },
                         error: function (rs, e) {
                             alert(rs.responseText);
@@ -130,6 +139,15 @@
                         success: function (response) {
                             $('#like{{ definition.pk }}').html("<i class=\"fa fa-thumbs-up\">&nbsp" + response.likes_count + "</i>");
                             $('#dislike{{ definition.pk }}').html("<i class=\"fa fa-thumbs-down\">&nbsp" + response.dislikes_count + "</i>");
+                            $("#like{{ definition.pk }}").removeClass();
+                            $("#dislike{{ definition.pk }}").removeClass();
+                            if (response.is_disliked) {
+                                $("#like{{ definition.pk }}").addClass("btn btn-outline-success");
+                                $("#dislike{{ definition.pk }}").addClass("btn btn-danger");
+                            } else {
+                                $("#like{{ definition.pk }}").addClass("btn btn-outline-success");
+                                $("#dislike{{ definition.pk }}").addClass("btn btn-outline-danger");
+                            }
                         },
                         error: function (rs, e) {
                             alert(rs.responseText);

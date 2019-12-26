@@ -337,20 +337,23 @@ def like(request):
             # user has already liked this definition
             # remove like/user
             defin.estimates.get(user=user).delete()
+            flag = False
         elif defin.estimates.filter(user=user, estimate=0).exists():
             defin.estimates.get(user=user).delete()
             Rating(definition=defin, user=user, estimate=1).save()
             if defin.author.id != user.id:
                 Notification(date_creation=datetime.now(), action_type=ACTION_TYPES[1][0], user=defin.author,
                              models_id="%s%s %s%s" % (USER, user.id, DEF, defin.id)).save()
+            flag = True
         else:
             # add a new like for a company
             Rating(definition=defin, user=user, estimate=1).save()
             if defin.author.id != user.id:
                 Notification(date_creation=datetime.now(), action_type=ACTION_TYPES[1][0], user=defin.author,
                              models_id="%s%s %s%s" % (USER, user.id, DEF, defin.id)).save()
+            flag = True
 
-        ctx = {'likes_count': defin.get_likes(), 'dislikes_count': defin.get_dislikes()}
+        ctx = {'likes_count': defin.get_likes(), 'dislikes_count': defin.get_dislikes(), 'is_liked': flag}
         # use mimetype instead of content_type if django < 5
         return HttpResponse(json.dumps(ctx), content_type='application/json')
 
@@ -366,20 +369,22 @@ def dislike(request):
             # user has already liked this definition
             # remove like/user
             defin.estimates.get(user=user).delete()
+            flag = False
         elif defin.estimates.filter(user=user, estimate=1).exists():
             defin.estimates.get(user=user).delete()
             if defin.author.id != user.id:
                 Notification(date_creation=datetime.now(), user=defin.author,
                              models_id="%s%s %s%s" % (USER, user.id, DEF, defin.id)).save()
             Rating(definition=defin, user=user, estimate=0).save()
+            flag = True
         else:
             # add a new like for a company
             Rating(definition=defin, user=user, estimate=0).save()
             if defin.author.id != user.id:
                 Notification(date_creation=datetime.now(), user=defin.author,
                              models_id="%s%s %s%s" % (USER, user.id, DEF, defin.id)).save()
-
-        ctx = {'dislikes_count': defin.get_dislikes(), 'likes_count': defin.get_likes()}
+            flag = True
+        ctx = {'dislikes_count': defin.get_dislikes(), 'likes_count': defin.get_likes(), 'is_disliked': flag}
         # use mimetype instead of content_type if django < 5
         return HttpResponse(json.dumps(ctx), content_type='application/json')
 
