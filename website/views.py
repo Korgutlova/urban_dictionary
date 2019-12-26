@@ -38,10 +38,7 @@ def main_page(request):
 
 
 def custom_handler404(request, exception, template_name="page_not_found.html"):
-    response = render_to_response("website/base/page_not_found.html")
-    response.status_code = 404
-    print(request.user)
-    return response
+    return render(request, 'website/base/page_not_found.html', {}, status=404)
 
 
 @login_required
