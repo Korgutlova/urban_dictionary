@@ -3,7 +3,6 @@ import random
 import time
 import os.path
 
-from django import template
 from django.contrib.auth import update_session_auth_hash
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.forms import PasswordChangeForm
@@ -15,6 +14,8 @@ from django.shortcuts import render, redirect, get_object_or_404, render_to_resp
 from django.views.decorators.http import require_POST
 from django_registration.forms import User
 from django.core.mail import send_mail
+from django.views import View
+from django.template import RequestContext
 
 from website.enums import STATUSES_FOR_REQUESTS, ACTION_TYPES, USER, DEF, RFP, RUPS, SUP
 from urban_dictionary.settings import EMAIL_HOST_USER
@@ -25,13 +26,8 @@ except ImportError:
     import json
 
 from website.forms import *
-from website.models import Definition, Term, CustomUser, Example, UploadData, Rating, RequestForPublication, Favorites, \
-    Notification, RequestUpdateStatus, Blocking
-
-from django.views import View
-from django.views.generic import ListView, DetailView
-
-from website.models import Term, STATUSES, ROLE_CHOICES
+from website.models import Definition, CustomUser, Example, UploadData, Rating, RequestForPublication, Favorites, \
+    Notification, RequestUpdateStatus, Blocking, Term, STATUSES, ROLE_CHOICES
 
 
 def main_page(request):
@@ -40,9 +36,10 @@ def main_page(request):
     # {'definitions': Definition.objects.all})
 
 
-def custom_handler404(request, exception):
+def custom_handler404(request, exception, template_name="page_not_found.html"):
     response = render_to_response("website/base/page_not_found.html")
     response.status_code = 404
+    print(request.user)
     return response
 
 

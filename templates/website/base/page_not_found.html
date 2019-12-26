@@ -1,8 +1,115 @@
-{% extends 'website/base/base_page.html' %}
-{% block title %}
-    Страница не найдена
-{% endblock %}
-{% block content %}
-    <div style="text-align: center;" class="row div-error"><h3>Страница не найдена <img
-            src="https://i.pinimg.com/originals/82/6c/3d/826c3d36e612e2474d32dba382a47495.png" style="max-width: 30%"></h3></div>
-{% endblock %}
+{% load static %}
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Страница не найдена | Современный Словарь</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+          integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
+            integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"
+            crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"
+            integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1"
+            crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"
+            integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM"
+            crossorigin="anonymous"></script>
+    <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
+    <link href="{% static 'css/custom.css' %}" rel="stylesheet">
+</head>
+<body>
+<nav id="navbarmenu" class="navbar navbar-expand-lg navbar-light fixed-top shadow" style="background: #ff7a06">
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarToggler"
+            aria-controls="navbarToggler" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+    <a class="navbar-brand" href="/">
+        <img src="{% static 'img/logo.png' %}" height="180" width="180">
+    </a>
+
+    <div class="collapse navbar-collapse flex-column" id="navbarToggler">
+        <div class="ml-auto">
+            <ul class="navbar-nav flex-row">
+                {% if not user.is_authenticated %}
+                    <li class="nav-item horizontal first">
+                        <a class="nav-link" href="/">Определения</a>
+                    </li>
+                    <li class="nav-item horizontal">
+                        <a class="nav-link" href="{% url "website:support" %}">Поддержка</a>
+                    </li>
+                    <li class="nav-item horizontal">
+                        <a class="nav-link" href="{% url 'login' %}">Войти</a>
+                    </li>
+                {% else %}
+                    <li class="nav-item horizontal first">
+                        <a class="nav-link" href="/">Определения</a>
+                    </li>
+                    <li class="nav-item horizontal">
+                        <a class="nav-link" href="{% url "website:favourites_list" %}">Избранное</a>
+                    </li>
+                    {% if not user.custom_user.is_admin %}
+                        <li class="nav-item horizontal">
+                            <a class="nav-link" href="{% url "website:personal_definitions" %}">Мои определения</a>
+                        </li>
+                    {% endif %}
+                    <li class="nav-item horizontal">
+                        <a class="nav-link" href="{% url "website:support" %}">Поддержка</a>
+                    </li>
+                    <li class="nav-item horizontal">
+                        <a class="nav-link" href="{% url "website:notifications" %}">Уведомления
+                            {% if user.custom_user.get_new_notification != 0 %}
+                                ({{ user.custom_user.get_new_notification }})
+                            {% endif %}</a>
+                    </li>
+                    {% if user.custom_user.is_admin %}
+                        <li class="nav-item horizontal">
+                            <a class="nav-link" href="{% url "website:requests_pub" %}">Запросы на
+                                публикацию</a>
+                        </li>
+                        <li class="nav-item horizontal">
+                            <a class="nav-link" href="{% url "website:requests_for_update_status" %}">Запросы на
+                                обновление статуса</a>
+                        </li>
+                    {% endif %}
+                    <li class="nav-item horizontal">
+                        <a href="{% url 'website:profile' user.id %}">
+                            <img width="50px" src="{% static 'img/profile.png' %}" alt="Мой профиль">
+                        </a>
+                    </li>
+                {% endif %}
+            </ul>
+        </div>
+        <ul class="navbar-nav flex-row mr-auto navbar-fixed col-md-10" style="padding-top: 40px;">
+            <li class="nav-item active col-md-12">
+                <form action="{% url 'website:search' %}" method="get" class="form-inline">
+                    <div class="input-group col-md-12">
+                        <input name="q" class="form-control form-control-lg" type="search" placeholder="Поиск..."
+                               aria-label="Search">
+                        <div class="input-group-append">
+                            <button class="btn btn-dark" type="submit"><i class="fa fa-search"></i></button>
+                        </div>
+                    </div>
+                </form>
+            </li>
+            <li class="nav-item col-md-3">
+                <a id="create_icon" href="{% url "website:create_definition" %}"
+                   style="color: inherit; font-size: 60px"><i class="fa fa-plus-circle"></i></a>
+                <a type="button" href="{% url "website:random_definition" %}" class="btn" id="random_word"
+                   style="border-radius: 30px/30px; height: 50px;font-size:18px; margin-bottom: 30px; margin-left: 15px; color: #ff7a06; background: #1b1b1b;">Случайное
+                    слово</a>
+            </li>
+        </ul>
+    </div>
+</nav>
+<div class="main">
+    <div class="container">
+        <div style="text-align: center;" class="row div-error"><h3>Страница не найдена <img
+                src="https://i.pinimg.com/originals/82/6c/3d/826c3d36e612e2474d32dba382a47495.png"
+                style="max-width: 30%"></h3>
+        </div>
+    </div>
+</div>
+</body>
+</html>
