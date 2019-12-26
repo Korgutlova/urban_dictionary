@@ -16,7 +16,7 @@ from django.views.decorators.http import require_POST
 from django_registration.forms import User
 from django.core.mail import send_mail
 
-from website.enums import STATUSES_FOR_REQUESTS, ACTION_TYPES, USER, DEF, RFP, RUPS, SUP
+from website.enums import STATUSES_FOR_REQUESTS, ACTION_TYPES, USER, DEF, RFP, RUPS, SUP, AMOUNT_NOTIF_DISPLAY
 from urban_dictionary.settings import EMAIL_HOST_USER
 from website.tasks import unblock_user
 
@@ -450,10 +450,13 @@ def requests_pub(request):
 def notifications(request):
     user = request.user.custom_user
     notifs = user.notifications.all().order_by("-date_creation")
+    len_new_notif = notifs.filter(new=True).count()
+    if AMOUNT_NOTIF_DISPLAY > len_new_notif:
+        len_new_notif = AMOUNT_NOTIF_DISPLAY
     for n in notifs:
         n.new = False
         n.save()
-    return render(request, "website/notifications.html", {"notifications": notifs})
+    return render(request, "website/notifications.html", {"notifications": notifs[:len_new_notif]})
 
 
 @login_required
