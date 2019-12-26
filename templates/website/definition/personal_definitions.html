@@ -90,10 +90,10 @@
             <hr>
             {% if definition.is_publish %}
                 <button {% if not user.is_authenticated %} disabled {% endif %} id="like{{ definition.pk }}"
-                                                           name="{{ definition.pk }}" class="btn btn-success"><i
+                                                           name="{{ definition.pk }}" class="btn {% is_liked definition user %}"><i
                         class="fa fa-thumbs-up">&nbsp{{ definition.get_likes }}</i></button>
                 <button {% if not user.is_authenticated %} disabled {% endif %} id="dislike{{ definition.pk }}"
-                                                           name="{{ definition.pk }}" class="btn btn-danger"><i
+                                                           name="{{ definition.pk }}" class="btn {% is_disliked definition user %}"><i
                         class="fa fa-thumbs-down">&nbsp{{ definition.get_dislikes }}</i></button>
                 <br>
                 <br>
