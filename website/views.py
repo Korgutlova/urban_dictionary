@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, timedelta
 import random
 import time
 import os.path
@@ -17,8 +17,9 @@ from django.core.mail import send_mail
 from django.views import View
 from django.template import RequestContext
 
-from website.enums import STATUSES_FOR_REQUESTS, ACTION_TYPES, USER, DEF, RFP, RUPS, SUP
+from website.enums import STATUSES_FOR_REQUESTS, ACTION_TYPES, USER, DEF, RFP, RUPS, SUP, AMOUNT_NOTIF_DISPLAY
 from urban_dictionary.settings import EMAIL_HOST_USER
+from website.tasks import unblock_user
 
 try:
     from django.utils import simplejson as json
@@ -201,7 +202,6 @@ def create_definition(request):
 
 @login_required
 def edit_definition(request, pk):
-    print("!!!")
     definition = Definition.objects.get(id=pk)
     current_user = request.user.custom_user
     if definition.author != current_user:
@@ -447,10 +447,13 @@ def requests_pub(request):
 def notifications(request):
     user = request.user.custom_user
     notifs = user.notifications.all().order_by("-date_creation")
+    len_new_notif = notifs.filter(new=True).count()
+    if AMOUNT_NOTIF_DISPLAY > len_new_notif:
+        len_new_notif = AMOUNT_NOTIF_DISPLAY
     for n in notifs:
         n.new = False
         n.save()
-    return render(request, "website/notifications.html", {"notifications": notifs})
+    return render(request, "website/notifications.html", {"notifications": notifs[:len_new_notif]})
 
 
 @login_required
@@ -514,7 +517,8 @@ def block(request, pk):
                       EMAIL_HOST_USER,
                       [blocked_user.email],
                       fail_silently=False)
-
+        unblock_user(pk, schedule=datetime.strptime(blocking.expiration_date, "%Y-%m-%dT%H:%M"), repeat=60,
+                     repeat_until=(datetime.strptime(blocking.expiration_date, "%Y-%m-%dT%H:%M") + timedelta(days=1)))
         return redirect('website:profile', pk=blocked_user.id)
     raise Http404()
 
