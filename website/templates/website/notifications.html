@@ -124,8 +124,12 @@
                         {% else %}
                             <a href="{% url "website:profile" notif.get_user.id %}">{{ notif.get_user }}</a>
                         {% endif %}
-                            отправил определение <a
-                                    href="{% url "website:request_for_definition" notif.get_rfp.id %}">
+                            отправил определение  <a
+                                    {% if notif.get_rfp.status == 1 %}
+                                    href="{% url "website:request_for_definition" notif.get_rfp.id %}"
+                                    {% else %}
+                                     href="{% url "website:definition" notif.get_rfp.definition.id %}"
+                                        {% endif %}>
                                 {{ notif.get_rfp.definition.term.name }}</a> на публкацию</p>
 
                         {# ==============================================================================================  #}

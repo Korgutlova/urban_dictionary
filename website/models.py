@@ -54,6 +54,8 @@ class CustomUser(models.Model):
         if block.expiration_date <= timezone.now():
             block.active = False
             block.save()
+            block.user.is_active = True
+            block.user.save()
             return False
         return True
 
