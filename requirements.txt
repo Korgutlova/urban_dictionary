@@ -14,7 +14,7 @@ Cython==0.29.14
 decorator==4.4.1
 Django==2.1.7
 django-environ==0.4.5
-django-registration==3.0.1
+django-registration==3.1.2
 django-widget-tweaks==1.4.3
 et-xmlfile==1.0.1
 gast==0.2.2
