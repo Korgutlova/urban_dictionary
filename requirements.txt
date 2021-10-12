@@ -42,7 +42,7 @@ mrcnn==0.2
 networkx==2.4
 numpy==1.16.2
 oauthlib==3.1.0
-opencv-python==4.1.1.26
+opencv-python==4.2.0.32
 openpyxl==2.6.0
 opt-einsum==3.1.0
 parsel==1.5.1
